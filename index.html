@@ -1,0 +1,467 @@
+<!--
+  Archivo: index.html
+  Descripción: Estructura HTML del sitio web de ALDIA para PYMEs (Gestión contable, fiscal y financiera).
+  Fecha de última modificación: 2026-06-27
+  Autor: Antigravity
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ALDIA - La plataforma inteligente de gestión contable, facturación e impuestos diseñada especialmente para PYMEs y autónomos. Mantén tu negocio al día.">
+    <title>ALDIA | Gestión Financiera y Contabilidad Inteligente para PYMEs</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS Estilos -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="main-header">
+        <div class="container header-container">
+            <a href="#" class="logo" id="header-logo">
+                <span class="logo-dot"></span>
+                <span>AL<span class="text-gradient">DIA</span></span>
+            </a>
+            
+            <nav class="main-nav" id="main-nav">
+                <ul class="nav-links">
+                    <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                    <li><a href="#servicios" class="nav-link">Servicios</a></li>
+                    <li><a href="#simulador" class="nav-link">Dashboard</a></li>
+                    <li><a href="#precios" class="nav-link">Precios</a></li>
+                    <li><a href="#contacto" class="nav-link btn-contact-nav">Iniciar Gratis</a></li>
+                </ul>
+            </nav>
+
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Abrir menú de navegación">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-section">
+        <div class="hero-background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+        </div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="badge-new">
+                    <span class="badge-icon">✨</span>
+                    <span>Nueva versión 2.0 ya disponible</span>
+                </div>
+                <h1 class="hero-title animate-slide-up">
+                    Lleva tu PYME <br>
+                    <span class="text-gradient">siempre al día</span> sin esfuerzo.
+                </h1>
+                <p class="hero-description">
+                    Automatiza tu contabilidad, genera facturas profesionales en segundos y delega tus impuestos con asesores expertos. Diseñado exclusivamente para PYMEs en crecimiento.
+                </p>
+                <div class="hero-actions">
+                    <a href="#contacto" class="btn btn-primary" id="hero-btn-start">Comenzar Prueba Gratis</a>
+                    <a href="#simulador" class="btn btn-secondary" id="hero-btn-demo">Ver Demostración</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">+10k</span>
+                        <span class="stat-label">PYMEs confían</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">99.8%</span>
+                        <span class="stat-label">Precisión fiscal</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Soporte experto</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="dashboard-mockup">
+                    <div class="mockup-header">
+                        <div class="mockup-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="mockup-title">dashboard.aldia.co</div>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="mockup-sidebar">
+                            <div class="sidebar-item active">📊 Resumen</div>
+                            <div class="sidebar-item">🧾 Facturas</div>
+                            <div class="sidebar-item">💼 Impuestos</div>
+                            <div class="sidebar-item">⚙️ Config</div>
+                        </div>
+                        <div class="mockup-content">
+                            <div class="content-header">
+                                <h3>Hola, Empresa Demo S.A.S.</h3>
+                                <span class="status-indicator">Al Día</span>
+                            </div>
+                            <div class="mini-cards">
+                                <div class="mini-card">
+                                    <span class="card-title">Ingresos Mes</span>
+                                    <span class="card-val text-success">$14,250.00</span>
+                                </div>
+                                <div class="mini-card">
+                                    <span class="card-title">Gastos Mes</span>
+                                    <span class="card-val text-warning">$8,410.00</span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <div class="chart-bar-y" style="--val: 85%;"></div>
+                                <div class="chart-bar-y" style="--val: 45%;"></div>
+                                <div class="chart-bar-y" style="--val: 70%;"></div>
+                                <div class="chart-bar-y" style="--val: 95%;"></div>
+                                <div class="chart-bar-y" style="--val: 60%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services / Features Section -->
+    <section id="servicios" class="services-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Todo lo que tu PYME necesita en un solo lugar</h2>
+                <p class="section-subtitle">Olvídate del desorden administrativo. Con ALDIA tienes control total sobre tus finanzas y obligaciones en tiempo real.</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- Card 1 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                    </div>
+                    <h3 class="service-title">Facturación Electrónica</h3>
+                    <p class="service-description">Emite facturas y cotizaciones personalizadas en segundos, totalmente homologadas con la normativa vigente de tu país.</p>
+                    <ul class="service-features">
+                        <li>Plantillas profesionales</li>
+                        <li>Envío automático por correo</li>
+                        <li>Control de facturas vencidas</li>
+                    </ul>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <h3 class="service-title">Declaración de Impuestos</h3>
+                    <p class="service-description">Generamos automáticamente los borradores de tus declaraciones fiscales para que nunca más pagues multas o recargos.</p>
+                    <ul class="service-features">
+                        <li>Cálculo automático de IVA y Retenciones</li>
+                        <li>Revisión por expertos fiscales</li>
+                        <li>Alertas de vencimientos</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </div>
+                    <h3 class="service-title">Contabilidad Automatizada</h3>
+                    <p class="service-description">Conecta tus cuentas bancarias y observa cómo tus transacciones se concilian y categorizan automáticamente mediante IA.</p>
+                    <ul class="service-features">
+                        <li>Conciliación bancaria en un clic</li>
+                        <li>Informes de Pérdidas y Ganancias</li>
+                        <li>Sincronización segura y encriptada</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Dashboard Section -->
+    <section id="simulador" class="dashboard-interactive-section">
+        <div class="container">
+            <div class="interactive-layout">
+                <div class="interactive-info">
+                    <div class="badge-primary">Simulador en Vivo</div>
+                    <h2 class="section-title">Toma el control con nuestro Dashboard</h2>
+                    <p class="section-subtitle">Experimenta cómo se siente ver y entender tu negocio al instante. Interactúa con las pestañas para ver diferentes reportes financieros.</p>
+                    
+                    <div class="interactive-tabs">
+                        <button class="tab-btn active" data-tab="ventas">📊 Reporte de Ventas</button>
+                        <button class="tab-btn" data-tab="gastos">💸 Control de Gastos</button>
+                        <button class="tab-btn" data-tab="impuestos">🏛️ Estado de Impuestos</button>
+                        <button class="tab-btn" data-tab="inventario">📦 Inventario Admin</button>
+                    </div>
+
+                    <div class="tab-explanations">
+                        <div class="tab-explanation active" id-exp="ventas">
+                            <h4>Optimiza tus flujos de ingresos</h4>
+                            <p>Visualiza en tiempo real tus facturas cobradas, pendientes de pago y vencidas. Proyecta tus ingresos del mes y toma mejores decisiones de caja.</p>
+                        </div>
+                        <div class="tab-explanation" id-exp="gastos">
+                            <h4>Reduce fugas de capital</h4>
+                            <p>Categoriza tus egresos automáticamente. Identifica rápidamente qué áreas o proveedores consumen la mayor parte de tu presupuesto mensual.</p>
+                        </div>
+                        <div class="tab-explanation" id-exp="impuestos">
+                            <h4>Tranquilidad frente a la entidad fiscal</h4>
+                            <p>Mantén un registro claro del IVA a pagar o a favor. Genera reportes listos para que tu contador o nuestro equipo presenten sin errores.</p>
+                        </div>
+                        <div class="tab-explanation" id-exp="inventario">
+                            <h4>Control de Stock y Catálogo</h4>
+                            <p>Inicia sesión como administrador para registrar nuevos productos en el catálogo de tu inventario. Los datos se guardan de forma segura en la base de datos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-preview-card">
+                    <div class="preview-header">
+                        <div class="header-user">
+                            <div class="avatar">A</div>
+                            <div>
+                                <span class="name">Mi Empresa S.A.S.</span>
+                                <span class="sub">Plan Avanzado</span>
+                            </div>
+                        </div>
+                        <span class="badge-status">Conectado</span>
+                    </div>
+
+                    <div class="preview-dynamic-content" id="dynamic-display">
+                        <!-- Content will be injected dynamically via JS -->
+                        <div class="loader-placeholder">Cargando datos...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="precios" class="pricing-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Planes sencillos, sin letras pequeñas</h2>
+                <p class="section-subtitle">Elige el plan que mejor se adapte al tamaño de tu negocio actual. Cancela o cambia de plan cuando quieras.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Plan 1 -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">Autónomos</h3>
+                    <p class="plan-desc">Ideal para profesionales independientes y emprendedores en etapa inicial.</p>
+                    <div class="plan-price">
+                        <span class="currency">$</span>
+                        <span class="price-val">19</span>
+                        <span class="period">/mes</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Hasta 50 facturas mensuales</li>
+                        <li>Conciliación bancaria básica</li>
+                        <li>Soporte vía chat</li>
+                        <li class="disabled">Declaración de impuestos</li>
+                        <li class="disabled">Asesor financiero dedicado</li>
+                    </ul>
+                    <a href="#contacto" class="btn btn-secondary plan-btn" data-plan="Autónomos">Comenzar Plan</a>
+                </div>
+
+                <!-- Plan 2 (Popular) -->
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Más Elegido</div>
+                    <h3 class="plan-name">PYME Crecimiento</h3>
+                    <p class="plan-desc">Para empresas estasbilizadas que buscan automatizar y delegar por completo.</p>
+                    <div class="plan-price">
+                        <span class="currency">$</span>
+                        <span class="price-val">49</span>
+                        <span class="period">/mes</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Facturas electrónicas ilimitadas</li>
+                        <li>Conciliación bancaria avanzada con IA</li>
+                        <li>Borradores de impuestos automáticos</li>
+                        <li>Soporte prioritario 24/7</li>
+                        <li class="disabled">Asesor financiero dedicado</li>
+                    </ul>
+                    <a href="#contacto" class="btn btn-primary plan-btn" data-plan="PYME Crecimiento">Comenzar Plan</a>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">Empresarial</h3>
+                    <p class="plan-desc">Acompañamiento contable integral de la mano de profesionales certificados.</p>
+                    <div class="plan-price">
+                        <span class="currency">$</span>
+                        <span class="price-val">99</span>
+                        <span class="period">/mes</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Todo lo del plan Crecimiento</li>
+                        <li>Presentación y firma de impuestos</li>
+                        <li>Asesor contable y tributario dedicado</li>
+                        <li>Auditorías fiscales mensuales</li>
+                        <li>Acceso multiusuario ilimitado</li>
+                    </ul>
+                    <a href="#contacto" class="btn btn-secondary plan-btn" data-plan="Empresarial">Comenzar Plan</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Lo que dicen las PYMEs de ALDIA</h2>
+                <p class="section-subtitle">Nuestros clientes ahorran un promedio de 15 horas al mes en tareas administrativas.</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Pasé de odiar la facturación a hacerla en 5 minutos en el celular. La declaración de IVA dejó de ser un dolor de cabeza mensual."</p>
+                    <div class="testimonial-author">
+                        <span class="author-avatar">CM</span>
+                        <div>
+                            <span class="author-name">Carlos Mendoza</span>
+                            <span class="author-company">Fundador de TecnoSoporte</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"La tranquilidad de saber que mis impuestos están siendo revisados por asesores expertos es invaluable. Excelente servicio y plataforma."</p>
+                    <div class="testimonial-author">
+                        <span class="author-avatar">LR</span>
+                        <div>
+                            <span class="author-name">Laura Restrepo</span>
+                            <span class="author-company">Directora de Diseño & Arte</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Conectamos nuestras cuentas bancarias y al día siguiente ya teníamos toda la contabilidad organizada del mes. Ahorramos muchísimo tiempo."</p>
+                    <div class="testimonial-author">
+                        <span class="author-avatar">JS</span>
+                        <div>
+                            <span class="author-name">Juan Silva</span>
+                            <span class="author-company">Socio de Gastronomía Local</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact / Lead Capture Section -->
+    <section id="contacto" class="contact-section">
+        <div class="container contact-container">
+            <div class="contact-info">
+                <h2 class="section-title text-left">Comienza a tener tu PYME al día desde hoy</h2>
+                <p class="section-subtitle text-left">Pruébanos totalmente gratis por 14 días. No requiere tarjeta de crédito.</p>
+                
+                <div class="contact-bullets">
+                    <div class="bullet-item">
+                        <span class="bullet-icon">✓</span>
+                        <span>Configuración inicial guiada y sin costo</span>
+                    </div>
+                    <div class="bullet-item">
+                        <span class="bullet-icon">✓</span>
+                        <span>Migración fácil de tus datos antiguos</span>
+                    </div>
+                    <div class="bullet-item">
+                        <span class="bullet-icon">✓</span>
+                        <span>Asesoría personalizada por llamada</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-wrapper">
+                <form id="contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Nombre Completo</label>
+                        <input type="text" id="name" name="name" placeholder="Ej. Ana María Pérez" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" placeholder="Ej. contacto@miempresa.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company">Nombre de tu PYME</label>
+                        <input type="text" id="company" name="company" placeholder="Ej. Inversiones Alfa" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="plan-select">Plan de Interés</label>
+                        <select id="plan-select" name="plan">
+                            <option value="Autónomos">Autónomos ($19/mes)</option>
+                            <option value="PYME Crecimiento" selected>PYME Crecimiento ($49/mes)</option>
+                            <option value="Empresarial">Empresarial ($99/mes)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="form-submit-btn">Crear Cuenta Gratis</button>
+                    
+                    <div class="form-feedback" id="form-feedback"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <span class="logo-dot"></span>
+                    <span>AL<span class="text-gradient">DIA</span></span>
+                </a>
+                <p class="footer-desc">Haciendo que la gestión contable y tributaria de las PYMEs sea inteligente, simple y sin estrés.</p>
+            </div>
+
+            <div class="footer-links-grid">
+                <div>
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="#servicios">Funcionalidades</a></li>
+                        <li><a href="#simulador">Simulador</a></li>
+                        <li><a href="#precios">Precios</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Recursos</h4>
+                    <ul>
+                        <li><a href="#">Blog de PYMEs</a></li>
+                        <li><a href="#">Guía Tributaria</a></li>
+                        <li><a href="#">Calculadora de IVA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Términos de Servicio</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Seguridad de Datos</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container footer-bottom-container">
+                <p>&copy; 2026 ALDIA. Todos los derechos reservados. Creado para el éxito de tu PYME.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Scripts -->
+    <script src="index.js"></script>
+</body>
+</html>

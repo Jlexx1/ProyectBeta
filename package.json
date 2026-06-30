@@ -1,0 +1,14 @@
+{
+  "name": "aldia-pymes-web",
+  "version": "1.0.0",
+  "description": "Sitio web de ALDIA para PYMEs con servidor backend local y base de datos SQLite para inventario.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}
