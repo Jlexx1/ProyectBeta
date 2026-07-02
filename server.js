@@ -1,109 +1,78 @@
-/*
-  Archivo: server.js
-  Descripción: Servidor Express para servir archivos estáticos y API REST de autenticación e inventario de ALDIA.
-  Fecha de última modificación: 2026-06-27
-  Autor: Antigravity
-*/
-
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const Database = require('better-sqlite3');
 const cors = require('cors');
 const path = require('path');
-const db = require('./database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
+const dbPath = path.join(__dirname, 'database.sqlite');
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
 
-// Servir archivos estáticos del frontend
-app.use(express.static(path.join(__dirname)));
+const db = new Database(dbPath);
+db.pragma('journal_mode = WAL');
 
-// ----------------------------------------------------
-// Endpoints de Autenticación
-// ----------------------------------------------------
-app.post('/api/auth/login', (req, res) => {
-    const { username, password } = req.body;
-    
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Usuario y contraseña son requeridos' });
-    }
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre_negocio TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    subdominio TEXT UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
 
-    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error del servidor' });
-        }
-        if (!row) {
-            return res.status(401).json({ error: 'Credenciales inválidas' });
-        }
-        res.json({
-            success: true,
-            user: {
-                username: row.username,
-                role: row.role
-            }
-        });
-    });
+app.post('/api/registro', (req, res) => {
+  const { nombre_negocio, email, password, password_confirmation, subdominio } = req.body;
+
+  if (!nombre_negocio || !email || !password || !subdominio) {
+    return res.status(422).json({ message: 'Todos los campos son obligatorios.' });
+  }
+  if (password !== password_confirmation) {
+    return res.status(422).json({ message: 'Las contraseñas no coinciden.' });
+  }
+  if (password.length < 8) {
+    return res.status(422).json({ message: 'La contraseña debe tener al menos 8 caracteres.' });
+  }
+
+  const exists = db.prepare('SELECT id FROM users WHERE email = ? OR subdominio = ?').get(email, subdominio);
+  if (exists) {
+    return res.status(422).json({ message: 'El email o subdominio ya está registrado.' });
+  }
+
+  const hashed = bcrypt.hashSync(password, 10);
+  db.prepare('INSERT INTO users (nombre_negocio, email, password, subdominio) VALUES (?, ?, ?, ?)').run(
+    nombre_negocio, email, hashed, subdominio
+  );
+
+  res.status(201).json({ message: 'Cuenta creada exitosamente.', redirect: '/' });
 });
 
-// ----------------------------------------------------
-// Endpoints de Inventario (CRUD de Productos)
-// ----------------------------------------------------
+app.get('/api/check-subdominio', (req, res) => {
+  const slug = (req.query.subdominio || '').toLowerCase().trim();
 
-// Obtener todos los productos
-app.get('/api/products', (req, res) => {
-    db.all('SELECT * FROM products ORDER BY id DESC', [], (err, rows) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json(rows);
-    });
+  if (!slug || slug.length < 3) {
+    return res.json({ disponible: false, motivo: 'corto' });
+  }
+
+  const exists = db.prepare('SELECT id FROM users WHERE subdominio = ?').get(slug);
+  const reservados = ['admin', 'api', 'www', 'mail', 'ftp', 'app', 'demo', 'test', 'ayuda', 'soporte', 'blog', 'login', 'registro', 'panel', 'dashboard'];
+
+  if (exists) {
+    return res.json({ disponible: false, motivo: 'ocupado' });
+  }
+  if (reservados.includes(slug)) {
+    return res.json({ disponible: false, motivo: 'reservado' });
+  }
+
+  res.json({ disponible: true });
 });
 
-// Crear nuevo producto
-app.post('/api/products', (req, res) => {
-    const { name, sku, price, stock } = req.body;
-    
-    if (!name || !sku || price === undefined || stock === undefined) {
-        return res.status(400).json({ error: 'Todos los campos son obligatorios' });
-    }
-
-    db.run(
-        'INSERT INTO products (name, sku, price, stock) VALUES (?, ?, ?, ?)',
-        [name, sku, price, stock],
-        function(err) {
-            if (err) {
-                if (err.message.includes('UNIQUE constraint failed')) {
-                    return res.status(400).json({ error: 'El SKU ya existe en el inventario' });
-                }
-                return res.status(500).json({ error: err.message });
-            }
-            res.status(201).json({
-                id: this.lastID,
-                name,
-                sku,
-                price,
-                stock
-            });
-        }
-    );
-});
-
-// Eliminar un producto
-app.delete('/api/products/:id', (req, res) => {
-    const { id } = req.params;
-    db.run('DELETE FROM products WHERE id = ?', id, function(err) {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (this.changes === 0) {
-            return res.status(404).json({ error: 'Producto no encontrado' });
-        }
-        res.json({ success: true, message: 'Producto eliminado del inventario' });
-    });
-});
-
-// Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`Servidor de ALDIA corriendo en: http://localhost:${PORT}`);
+  console.log(`ALDIA server running at http://localhost:${PORT}`);
 });
