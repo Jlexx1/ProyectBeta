@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Dashboard — ALDIA</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; }
+        .header { background: #1e3a5f; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 1.25rem; }
+        .header .user-info { display: flex; align-items: center; gap: 1rem; font-size: .875rem; }
+        .header a { color: #93c5fd; text-decoration: none; }
+        .header a:hover { text-decoration: underline; }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .card h2 { font-size: 1.125rem; margin-bottom: 1rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+        .form-grid .full { grid-column: 1 / -1; }
+        input, select { width: 100%; padding: .625rem .75rem; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: .875rem; outline: none; transition: border-color .15s; }
+        input:focus { border-color: #3b82f6; }
+        .btn { padding: .625rem 1.25rem; border: none; border-radius: 8px; font-size: .875rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+        .btn:hover { opacity: .85; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-sm { padding: .375rem .75rem; font-size: .8rem; }
+        table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+        th, td { text-align: left; padding: .75rem .5rem; border-bottom: 1px solid #f1f5f9; }
+        th { font-weight: 600; color: #64748b; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; }
+        .badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: .75rem; padding: .125rem .5rem; border-radius: 999px; }
+        .empty { text-align: center; padding: 3rem 0; color: #94a3b8; }
+        .login-wrapper { max-width: 400px; margin: 4rem auto; }
+        .login-card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 2rem; }
+        .login-card h2 { text-align: center; margin-bottom: .5rem; }
+        .login-card p { text-align: center; color: #64748b; font-size: .875rem; margin-bottom: 1.5rem; }
+        .login-card .form-group { margin-bottom: 1rem; }
+        .login-card label { display: block; font-size: .875rem; font-weight: 600; margin-bottom: .375rem; color: #334155; }
+        .login-card .btn { width: 100%; padding: .75rem; }
+        .error { color: #dc2626; font-size: .875rem; text-align: center; margin-top: .75rem; }
+        .success { color: #16a34a; font-size: .875rem; text-align: center; margin-top: .75rem; }
+        .ml-2 { margin-left: .5rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .gap-2 { gap: .5rem; }
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-2 { margin-bottom: .5rem; }
+    </style>
+</head>
+<body>
+
+<div x-data="app()">
+    <template x-if="!token">
+        <div class="login-wrapper">
+            <div class="login-card">
+                <h2>Iniciar sesión</h2>
+                <p>Ingresá a tu panel de inventario</p>
+                <form @submit.prevent="login()" action="/api/login" method="POST">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input id="login-email" type="email" x-model="loginEmail" placeholder="admin@aldia.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input id="login-password" type="password" x-model="loginPassword" placeholder="Contraseña" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" :disabled="loading">
+                        <span x-text="loading ? 'Ingresando…' : 'Ingresar'"></span>
+                    </button>
+                    <p class="error" x-show="loginError" x-text="loginError"></p>
+                </form>
+                <p class="text-center mt-4" style="font-size:.8rem;color:#94a3b8;">
+                    Demo: admin@aldia.com / Admin123!
+                </p>
+            </div>
+        </div>
+    </template>
+
+    <template x-if="token">
+        <div>
+            <div class="header">
+                <h1>ALDIA — Panel de inventario</h1>
+                <div class="user-info">
+                    <span x-text="'👤 ' + userName"></span>
+                    <a href="#" @click.prevent="logout()">Cerrar sesión</a>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="card">
+                    <h2>Agregar producto</h2>
+                    <form @submit.prevent="addProduct()">
+                        <div class="form-grid">
+                            <div class="full">
+                                <input type="text" x-model="form.name" placeholder="Nombre del producto" required>
+                            </div>
+                            <div>
+                                <input type="number" step="0.01" x-model="form.price" placeholder="Precio" required>
+                            </div>
+                            <div>
+                                <input type="number" x-model="form.stock" placeholder="Stock">
+                            </div>
+                            <div>
+                                <input type="text" x-model="form.category" placeholder="Categoría">
+                            </div>
+                            <div class="full">
+                                <input type="text" x-model="form.description" placeholder="Descripción (opcional)">
+                            </div>
+                            <div class="full">
+                                <button type="submit" class="btn btn-primary" :disabled="loading">Guardar producto</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Productos <span class="badge" x-text="products.length"></span></h2>
+                    <template x-if="products.length === 0">
+                        <div class="empty">
+                            <p>No hay productos todavía. Agregá el primero.</p>
+                        </div>
+                    </template>
+                    <template x-if="products.length > 0">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Categoría</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="p in products" :key="p.id">
+                                    <tr>
+                                        <td><strong x-text="p.name"></strong><br><span style="font-size:.75rem;color:#94a3b8" x-text="p.description"></span></td>
+                                        <td x-text="'$' + parseFloat(p.price).toFixed(2)"></td>
+                                        <td x-text="p.stock"></td>
+                                        <td><span class="badge" x-text="p.category || '—'"></span></td>
+                                        <td><button class="btn btn-danger btn-sm" @click="deleteProduct(p.id)">Eliminar</button></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+<script>
+function app() {
+    return {
+        token: localStorage.getItem('auth_token') || '',
+        userName: localStorage.getItem('user_name') || '',
+        loginEmail: '',
+        loginPassword: '',
+        loginError: '',
+        loading: false,
+        products: [],
+        form: { name: '', description: '', price: '', stock: '', category: '' },
+        apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
+
+        init() {
+            if (this.token) this.loadProducts();
+        },
+
+        login() {
+            this.loading = true;
+            this.loginError = '';
+            fetch(this.apiBase + '/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: this.loginEmail, password: this.loginPassword })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.token) {
+                    this.token = data.token;
+                    this.userName = data.user.nombre_negocio;
+                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('user_name', data.user.nombre_negocio);
+                    this.loadProducts();
+                } else {
+                    this.loginError = data.message || 'Error al iniciar sesión.';
+                }
+                this.loading = false;
+            })
+            .catch(() => { this.loginError = 'Error de conexión.'; this.loading = false; });
+        },
+
+        logout() {
+            this.token = '';
+            this.userName = '';
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            this.products = [];
+        },
+
+        loadProducts() {
+            fetch(this.apiBase + '/api/products', { headers: { 'Authorization': this.token } })
+                .then(r => r.json())
+                .then(data => { this.products = data; })
+                .catch(() => {});
+        },
+
+        addProduct() {
+            this.loading = true;
+            fetch(this.apiBase + '/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': this.token },
+                body: JSON.stringify({
+                    name: this.form.name,
+                    description: this.form.description,
+                    price: parseFloat(this.form.price),
+                    stock: parseInt(this.form.stock) || 0,
+                    category: this.form.category
+                })
+            })
+            .then(r => r.json())
+            .then(() => {
+                this.form = { name: '', description: '', price: '', stock: '', category: '' };
+                this.loadProducts();
+                this.loading = false;
+            })
+            .catch(() => { this.loading = false; });
+        },
+
+        deleteProduct(id) {
+            if (!confirm('¿Eliminar este producto?')) return;
+            fetch(this.apiBase + '/api/products/' + id, {
+                method: 'DELETE',
+                headers: { 'Authorization': this.token }
+            })
+            .then(r => r.json())
+            .then(() => { this.loadProducts(); })
+            .catch(() => {});
+        }
+    }
+}
+</script>
+</body>
+</html>

@@ -142,6 +142,7 @@
         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
     </svg>
 </button>
+            <a href="#login" class="mpv-btn mpv-btn-ghost mpv-btn-sm">Iniciar sesión</a>
             <a href="#registro" class="mpv-btn mpv-btn-primary mpv-btn-sm">Crear cuenta gratis</a>
         </div>
 
@@ -186,10 +187,9 @@
         <a href="#como-funciona"   class="mpv-mobile-link" x-on:click="open=false">Cómo funciona</a>
         <a href="#glosario"  class="mpv-mobile-link" x-on:click="open=false">Glosario</a>
         <a href="#precios"            class="mpv-mobile-link" x-on:click="open=false">Precios</a>
-        <div class="pt-4">
-            <a href="#registro" class="mpv-btn mpv-btn-primary mpv-btn-sm w-full justify-center">
-                Crear cuenta gratis
-            </a>
+        <div class="pt-4 flex flex-col gap-2">
+            <a href="#login" class="mpv-btn mpv-btn-ghost mpv-btn-sm w-full justify-center">Iniciar sesión</a>
+            <a href="#registro" class="mpv-btn mpv-btn-primary mpv-btn-sm w-full justify-center">Crear cuenta gratis</a>
         </div>
     </div>
 </header>
@@ -225,6 +225,7 @@
 
                 
                 <div class="flex flex-col sm:flex-row flex-wrap gap-3 mb-9">
+                    <a href="#login" class="mpv-btn mpv-btn-ghost py-3 px-5 text-sm sm:py-[18px] sm:px-7 sm:text-base justify-center">Iniciar sesión</a>
                     <a href="#registro" class="mpv-btn mpv-btn-primary py-3 px-5 text-sm sm:py-[18px] sm:px-7 sm:text-base justify-center">
                         Empezar gratis — 14 días
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -612,6 +613,7 @@
         
         <div class="text-center mt-8 md:mt-12">
             <a href="#registro" class="mpv-btn mpv-btn-primary mpv-btn-lg">Crear mi cuenta gratis →</a>
+            <a href="#login" class="mpv-btn mpv-btn-ghost mpv-btn-lg">Iniciar sesión</a>
         </div>
     </div>
 </section>
@@ -1014,7 +1016,7 @@
     <div class="mpv-container">
         <div class="mb-12 max-w-[760px] mx-auto text-center">
             <span class="mpv-section-tag">Precios</span>
-            <h2 class="text-3xl sm:text-4xl md:text-[52px] font-extrabold leading-[1.06] tracking-[-0.025em] text-(--mpv-heading) m-0">Planes en dÃ³lares, sin sorpresas.</h2>
+            <h2 class="text-3xl sm:text-4xl md:text-[52px] font-extrabold leading-[1.06] tracking-[-0.025em] text-(--mpv-heading) m-0">Planes en dólares, sin sorpresas.</h2>
             <p class="mt-4 text-base md:text-lg leading-relaxed text-(--mpv-text)">14 días gratis en el plan Crecé. Sin tarjeta de crédito.</p>
         </div>
 
@@ -1186,7 +1188,7 @@
                                 </div>
 
         <p class="text-center text-sm text-(--mpv-muted) mt-8 max-w-[760px] mx-auto">
-            Precios en dÃ³lares estadounidenses, sin costos ocultos. El cobro mensual se realiza automáticamente vía MercadoPago. Podés cancelar cuando quieras desde tu panel.
+            Precios en dólares estadounidenses, sin costos ocultos. El cobro mensual se realiza automáticamente vía MercadoPago. Podés cancelar cuando quieras desde tu panel.
         </p>
     </div>
 </section>
@@ -2703,13 +2705,61 @@
     </div>
 </section>
 
+<section id="login" class="bg-white py-16 md:py-24">
+    <div class="max-w-md mx-auto px-5">
+        <h2 class="mb-2.5 text-3xl font-extrabold leading-tight tracking-tight text-slate-900 text-center">
+            Iniciar sesi&oacute;n
+        </h2>
+        <p class="mb-10 text-[15px] leading-relaxed text-slate-500 text-center">
+            Ingres&aacute; a tu panel de administraci&oacute;n
+        </p>
+
+        <form id="login-form" method="POST" action="/api/login">
+            <div class="mb-4">
+                <label for="login_email" class="mb-2 block text-sm font-semibold text-slate-700">Email</label>
+                <input
+                    id="login_email"
+                    name="email"
+                    type="email"
+                    placeholder="tunombre@gmail.com"
+                    required
+                    class="block w-full rounded-xl border-[1.5px] bg-white px-3.5 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-blue-600/10"
+                />
+            </div>
+
+            <div class="mb-4">
+                <label for="login_password" class="mb-2 block text-sm font-semibold text-slate-700">Contrase&ntilde;a</label>
+                <input
+                    id="login_password"
+                    name="password"
+                    type="password"
+                    placeholder="Tu contrase&ntilde;a"
+                    required
+                    class="block w-full rounded-xl border-[1.5px] bg-white px-3.5 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-blue-600/10"
+                />
+            </div>
+
+            <div id="login-message" class="mb-4 text-center text-sm hidden"></div>
+
+            <button type="submit"
+                    class="group relative inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-slate-800 px-5 py-3.5 text-[15px] font-bold text-white shadow-[0_4px_0_#334155,0_10px_24px_-8px_rgba(30,41,59,.5)] transition hover:-translate-y-px hover:shadow-[0_5px_0_#334155,0_14px_30px_-8px_rgba(30,41,59,.6)] active:translate-y-0.5 active:shadow-[0_2px_0_#334155,0_6px_14px_-6px_rgba(30,41,59,.4)]">
+                Ingresar al panel
+            </button>
+
+            <p class="mt-6 text-center text-xs text-slate-400">
+                Demo: <strong>admin@aldia.com</strong> / <strong>Admin123!</strong>
+            </p>
+        </form>
+    </div>
+</section>
+
 <section id="registro" class="bg-slate-50 py-16 md:py-24" x-data="registroForm()" x-cloak>
     <div class="max-w-2xl mx-auto px-5">
         <h2 class="mb-2.5 text-3xl font-extrabold leading-tight tracking-tight text-slate-900 text-center">
-            Crea¡ tu cuenta gratis
+            Creá tu cuenta gratis
         </h2>
         <p class="mb-10 text-[15px] leading-relaxed text-slate-500 text-center">
-            2 minutos, 5 campos, cero tarjeta. Empezas a vender hoy.
+            2 minutos, 5 campos, cero tarjeta. Empezás a vender hoy.
         </p>
 
         <form
@@ -2770,7 +2820,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="password_confirmation" class="mb-2 block text-sm font-semibold text-slate-700">Confirma¡ tu contraseña</label>
+                <label for="password_confirmation" class="mb-2 block text-sm font-semibold text-slate-700">Confirmá tu contraseña</label>
                 <input
                     id="password_confirmation"
                     name="password_confirmation"
@@ -2801,7 +2851,7 @@
                 <p x-show="subdomEstado === 'idle'" class="mt-1.5 text-xs text-slate-400">Después la compartís con tu equipo para que se sume..</p>
                 <p x-show="subdomEstado === 'corto'" x-cloak class="mt-1.5 text-xs text-slate-400">Maximo 3 caracteres.</p>
                 <p x-show="subdomEstado === 'checking'" x-cloak class="mt-1.5 text-xs text-slate-400">Verificando disponibilidades¦</p>
-                <p x-show="subdomEstado === 'ok'" x-cloak class="mt-1.5 text-xs font-medium text-emerald-600">Esta¡ Disponible!</p>
+                <p x-show="subdomEstado === 'ok'" x-cloak class="mt-1.5 text-xs font-medium text-emerald-600">Esta¡ Disponible!
                 <p x-show="subdomEstado === 'ocupado'" x-cloak class="mt-1.5 text-xs text-red-500">Ese subdominio ya esta¡ en uso. Proba¡ otro.</p>
                 <p x-show="subdomEstado === 'reservado'" x-cloak class="mt-1.5 text-xs text-red-500">Ese subdominio esta¡ reservado. Elega­ otro.</p>
             </div>
@@ -2827,12 +2877,17 @@
                 <template x-if="submitting">
                     <span class="inline-flex items-center gap-2.5">
                         <span class="h-[18px] w-[18px] animate-spin rounded-full border-[2.5px] border-white/40 border-t-white"></span>
-                        Creando tu cuentaâ€¦
+                        Creando tu cuenta…
                     </span>
                 </template>
             </button>
 
             <div id="registro-message" class="mt-4 text-center text-sm hidden"></div>
+
+            <p class="mt-6 text-center text-sm text-slate-500">
+                ¿Ya tenés cuenta?
+                <a href="#login" class="font-semibold text-blue-600 hover:text-blue-700 underline decoration-blue-600/30 underline-offset-[3px]">Iniciar sesión</a>
+            </p>
         </form>
     </div>
 </section>
@@ -2949,7 +3004,7 @@ function registroForm() {
         },
 
         get passwordLabel() {
-            return ['', 'DÃ©bil', 'Aceptable', 'Buena', 'Fuerte'][this.passwordScore] || '';
+            return ['', 'Débil', 'Aceptable', 'Buena', 'Fuerte'][this.passwordScore] || '';
         },
 
         get passwordColor() {
@@ -2978,11 +3033,12 @@ function registroForm() {
             this.subdomEstado = 'checking';
             const token = ++this._subdomToken;
             this._subdomTimer = setTimeout(() => {
-                fetch('/api/check-subdominio?subdominio=' + encodeURIComponent(slug), { headers: { Accept: 'application/json' } })
+                var base = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+                fetch(base + '/api/check-subdominio?subdominio=' + encodeURIComponent(slug), { headers: { Accept: 'application/json' } })
                     .then(r => r.json())
                     .then(data => {
                         if (token !== this._subdomToken) return;
-                        this.subdomEstado = data.disponible ? 'ok' : (data.motivo || 'ocupado');
+                        this.subdomEstado = data.Disponible!
                     })
                     .catch(() => { if (token === this._subdomToken) this.subdomEstado = 'idle'; });
             }, 400);
@@ -3007,14 +3063,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!form) return;
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var formData = new FormData(form);
         var msg = document.getElementById('registro-message');
         var btn = form.querySelector('button[type="submit"]');
         btn.disabled = true;
 
-        fetch('/api/registro', {
+        var data = {};
+        [].slice.call(form.querySelectorAll('[name]')).forEach(function(el) {
+            if (el.type !== 'checkbox' || el.checked) data[el.name] = el.value;
+        });
+
+        var base = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+        fetch(base + '/api/registro', {
             method: 'POST',
-            body: formData
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
         })
         .then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
         .then(function(res) {
@@ -3032,7 +3094,54 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(function() {
             msg.classList.remove('hidden', 'text-red-600', 'text-emerald-600');
             msg.className = 'mt-4 text-center text-sm text-red-600';
-            msg.textContent = 'Error de conexiÃ³n con el servidor.';
+            var hint = window.location.protocol === 'file:' ? ' Abrí http://localhost:3000 en el navegador.' : '';
+            msg.textContent = 'Error de conexión con el servidor.' + hint;
+            btn.disabled = false;
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var loginForm = document.querySelector('#login-form');
+    if (!loginForm) return;
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var msg = document.getElementById('login-message');
+        var btn = loginForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+
+        var data = {};
+        [].slice.call(loginForm.querySelectorAll('[name]')).forEach(function(el) {
+            if (el.type !== 'checkbox' || el.checked) data[el.name] = el.value;
+        });
+
+        var base = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+        fetch(base + '/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
+        .then(function(res) {
+            msg.classList.remove('hidden', 'text-red-600', 'text-emerald-600');
+            if (res.status === 200) {
+                localStorage.setItem('auth_token', res.data.token);
+                localStorage.setItem('user_name', res.data.user.nombre_negocio);
+                msg.className = 'mb-4 text-center text-sm text-emerald-600';
+                msg.textContent = 'Inicio exitoso. Redirigiendo\u2026';
+                setTimeout(function() { window.location.href = '/dashboard.html'; }, 800);
+            } else {
+                msg.className = 'mb-4 text-center text-sm text-red-600';
+                msg.textContent = res.data.message || 'Error al iniciar sesi\u00f3n.';
+                btn.disabled = false;
+            }
+        })
+        .catch(function() {
+            msg.classList.remove('hidden', 'text-red-600', 'text-emerald-600');
+            msg.className = 'mb-4 text-center text-sm text-red-600';
+            var hint = window.location.protocol === 'file:' ? ' Abrí http://localhost:3000 en el navegador.' : '';
+            msg.textContent = 'Error de conexi\u00f3n con el servidor.' + hint;
             btn.disabled = false;
         });
     });
