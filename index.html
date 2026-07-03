@@ -3038,7 +3038,7 @@ function registroForm() {
                     .then(r => r.json())
                     .then(data => {
                         if (token !== this._subdomToken) return;
-                        this.subdomEstado = data.Disponible!
+                        this.subdomEstado = data.Disponible
                     })
                     .catch(() => { if (token === this._subdomToken) this.subdomEstado = 'idle'; });
             }, 400);
