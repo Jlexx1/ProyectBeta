@@ -1,246 +1,689 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Dashboard — ALDIA</title>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f1f5f9; color: #1e293b; }
-        .header { background: #1e3a5f; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 1.25rem; }
-        .header .user-info { display: flex; align-items: center; gap: 1rem; font-size: .875rem; }
-        .header a { color: #93c5fd; text-decoration: none; }
-        .header a:hover { text-decoration: underline; }
-        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
-        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 1.5rem; margin-bottom: 1.5rem; }
-        .card h2 { font-size: 1.125rem; margin-bottom: 1rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
-        .form-grid .full { grid-column: 1 / -1; }
-        input, select { width: 100%; padding: .625rem .75rem; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: .875rem; outline: none; transition: border-color .15s; }
-        input:focus { border-color: #3b82f6; }
-        .btn { padding: .625rem 1.25rem; border: none; border-radius: 8px; font-size: .875rem; font-weight: 600; cursor: pointer; transition: opacity .15s; }
-        .btn:hover { opacity: .85; }
-        .btn-primary { background: #2563eb; color: white; }
-        .btn-danger { background: #dc2626; color: white; }
-        .btn-sm { padding: .375rem .75rem; font-size: .8rem; }
-        table { width: 100%; border-collapse: collapse; font-size: .875rem; }
-        th, td { text-align: left; padding: .75rem .5rem; border-bottom: 1px solid #f1f5f9; }
-        th { font-weight: 600; color: #64748b; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; }
-        .badge { display: inline-block; background: #dbeafe; color: #1d4ed8; font-size: .75rem; padding: .125rem .5rem; border-radius: 999px; }
-        .empty { text-align: center; padding: 3rem 0; color: #94a3b8; }
-        .login-wrapper { max-width: 400px; margin: 4rem auto; }
-        .login-card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 2rem; }
-        .login-card h2 { text-align: center; margin-bottom: .5rem; }
-        .login-card p { text-align: center; color: #64748b; font-size: .875rem; margin-bottom: 1.5rem; }
-        .login-card .form-group { margin-bottom: 1rem; }
-        .login-card label { display: block; font-size: .875rem; font-weight: 600; margin-bottom: .375rem; color: #334155; }
-        .login-card .btn { width: 100%; padding: .75rem; }
-        .error { color: #dc2626; font-size: .875rem; text-align: center; margin-top: .75rem; }
-        .success { color: #16a34a; font-size: .875rem; text-align: center; margin-top: .75rem; }
-        .ml-2 { margin-left: .5rem; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .gap-2 { gap: .5rem; }
-        .text-center { text-align: center; }
-        .mt-4 { margin-top: 1rem; }
-        .mb-2 { margin-bottom: .5rem; }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <title>Dashboard — ALDIA</title>
+  <meta name="theme-color" content="#321fdb"/>
+  <link rel="icon" type="image/svg+xml" href="/logos/favicon-48.svg"/>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/coreui@5/dist/css/coreui.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/icons@5/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@coreui/chartjs@3/dist/css/coreui-chartjs.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@coreui/chartjs@3/dist/js/coreui-chartjs.min.js"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+    .sidebar { --cui-sidebar-bg: #212631; --cui-sidebar-brand-bg: #1b1f27; --cui-sidebar-nav-link-color: #a3a8b8; --cui-sidebar-nav-link-active-color: #fff; --cui-sidebar-nav-link-active-bg: rgba(255,255,255,.06); --cui-sidebar-nav-link-hover-color: #fff; --cui-sidebar-nav-link-hover-bg: rgba(255,255,255,.04); }
+    .sidebar-brand .icon { width: 28px; height: 28px; }
+    .sidebar-brand-text { font-weight: 800; letter-spacing: -.022em; font-size: 1.05rem; }
+    .sidebar-brand-text span { color: #3399ff; }
+    .header { --cui-header-bg: #fff; --cui-header-border-color: #e2e8f0; }
+    .footer { --cui-footer-bg: #f8fafc; --cui-footer-border-color: #e2e8f0; font-size: .8rem; }
+    .stats-card { border-left: 3px solid transparent; }
+    .stats-card .card-body { padding: 1rem 1.25rem; }
+    .stats-card .stats-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .stats-card .stats-value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+    .stats-card .stats-label { font-size: .78rem; color: #64748b; font-weight: 500; }
+    .login-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f1f5f9; }
+    .login-card { width: 100%; max-width: 420px; }
+    .login-logo { width: 40px; height: 40px; }
+    .table th { font-weight: 600; color: #64748b; font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+    .badge-soft-primary { background: #e8f0fe; color: #1967d2; }
+    .badge-soft-success { background: #e6f7ee; color: #137752; }
+    .badge-soft-danger { background: #fce8e6; color: #c5221f; }
+    .badge-soft-warning { background: #fef7e0; color: #b47d00; }
+    .badge-soft-info { background: #e4f0fb; color: #1967d2; }
+    .section-title { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #64748b; padding: 0 1rem; margin-bottom: .35rem; }
+    .sidebar-nav .nav-group-items .nav-link { padding-left: 2.5rem; }
+    .sidebar-nav .nav-link { font-size: .875rem; }
+    .sidebar-nav .nav-icon { font-size: .95rem; }
+    .page-heading { font-size: 1.1rem; font-weight: 700; margin-bottom: .25rem; }
+    .modal-header { border-bottom-color: #e2e8f0; }
+    .modal-footer { border-top-color: #e2e8f0; }
+    .form-control:focus { border-color: #3399ff; box-shadow: 0 0 0 .2rem rgba(51,153,255,.15); }
+    .c-chart-wrapper { position: relative; }
+    .table-actions .btn { padding: .2rem .45rem; font-size: .75rem; }
+    .header-nav .dropdown-menu { --cui-dropdown-min-width: 12rem; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #3399ff; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .8rem; }
+    .content-wrapper { padding: 1.25rem; }
+    @media (max-width: 767.98px) { .content-wrapper { padding: .75rem; } }
+    .table-search { max-width: 280px; }
+    .stock-bar { height: 4px; border-radius: 2px; background: #e2e8f0; overflow: hidden; margin-top: 4px; }
+    .stock-bar-fill { height: 100%; border-radius: 2px; transition: width .3s; }
+    .sidebar { transition: width .25s ease, min-width .25s ease; overflow: hidden; }
+    .sidebar:not(.sidebar-fixed) { position: relative; min-width: 260px; width: 260px; }
+    .sidebar:not(.sidebar-fixed).sidebar-unfoldable { min-width: 60px; width: 60px; }
+    .sidebar-unfoldable .sidebar-brand-text,
+    .sidebar-unfoldable .nav-link > span,
+    .sidebar-unfoldable .nav-link .badge { display: none; }
+    .sidebar-unfoldable .sidebar-brand { justify-content: center; padding: .75rem .5rem !important; gap: 0; }
+    .sidebar-unfoldable .sidebar-brand .icon { margin: 0 !important; }
+    .sidebar-unfoldable .nav-link { justify-content: center; padding: .75rem .4rem; }
+    .sidebar-unfoldable .sidebar-nav { padding: .5rem 0; }
+    .sidebar-unfoldable .sidebar-nav .nav-link { white-space: nowrap; }
+    .sidebar-unfoldable .sidebar-toggler { transform: rotate(180deg); }
+    .sidebar .nav-link { gap: .5rem; }
+  </style>
 </head>
 <body>
 
-<div x-data="app()">
-    <template x-if="!token">
-        <div class="login-wrapper">
-            <div class="login-card">
-                <h2>Iniciar sesión</h2>
-                <p>Ingresá a tu panel de inventario</p>
-                <form @submit.prevent="login()" action="/api/login" method="POST">
-                    <div class="form-group">
-                        <label for="login-email">Email</label>
-                        <input id="login-email" type="email" x-model="loginEmail" placeholder="admin@aldia.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">Contraseña</label>
-                        <input id="login-password" type="password" x-model="loginPassword" placeholder="Contraseña" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" :disabled="loading">
-                        <span x-text="loading ? 'Ingresando…' : 'Ingresar'"></span>
-                    </button>
-                    <p class="error" x-show="loginError" x-text="loginError"></p>
-                </form>
-                <p class="text-center mt-4" style="font-size:.8rem;color:#94a3b8;">
-                    Demo: admin@aldia.com / Admin123!
-                </p>
+<div x-data="app()" x-init="init()">
+
+  <template x-if="!token">
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <div class="text-center mb-4">
+              <svg class="login-logo mb-2" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="14" y="58" width="6" height="22" rx="3" fill="#3399ff" opacity="0.35"/>
+                <rect x="24" y="48" width="6" height="32" rx="3" fill="#3399ff" opacity="0.53"/>
+                <rect x="34" y="36" width="6" height="44" rx="3" fill="#3399ff" opacity="0.71"/>
+                <rect x="44" y="22" width="6" height="58" rx="3" fill="#3399ff" opacity="0.89"/>
+                <path d="M54 22 L74 22 C79 22 83 26 83 31 L83 51 C83 56 79 60 74 60 L64 60" fill="none" stroke="#3399ff" stroke-width="7" stroke-linecap="round"/>
+                <rect x="14" y="80" width="42" height="4" rx="2" fill="#3399ff"/>
+              </svg>
+              <h3 class="fw-bold mb-1">ALDIA</h3>
+              <p class="text-body-secondary small mb-0">Panel de administración</p>
             </div>
+
+            <form @submit.prevent="login()">
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Email</label>
+                <input type="email" class="form-control" x-model="loginEmail" placeholder="admin@aldia.com" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-semibold">Contraseña</label>
+                <input type="password" class="form-control" x-model="loginPassword" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100" :disabled="loading" x-text="loading ? 'Ingresando…' : 'Ingresar'"></button>
+              <p class="text-danger small text-center mt-2 mb-0" x-show="loginError" x-text="loginError"></p>
+            </form>
+
+            <p class="text-center mt-3 mb-0" style="font-size:.75rem;color:#94a3b8;">
+              Demo: admin@aldia.com / Admin123!
+            </p>
+          </div>
         </div>
-    </template>
+      </div>
+    </div>
+  </template>
 
-    <template x-if="token">
-        <div>
-            <div class="header">
-                <h1>ALDIA — Panel de inventario</h1>
-                <div class="user-info">
-                    <span x-text="'👤 ' + userName"></span>
-                    <a href="#" @click.prevent="logout()">Cerrar sesión</a>
-                </div>
-            </div>
+  <template x-if="token">
+    <div class="d-flex" style="min-height:100vh">
 
-            <div class="container">
-                <div class="card">
-                    <h2>Agregar producto</h2>
-                    <form @submit.prevent="addProduct()">
-                        <div class="form-grid">
-                            <div class="full">
-                                <input type="text" x-model="form.name" placeholder="Nombre del producto" required>
-                            </div>
-                            <div>
-                                <input type="number" step="0.01" x-model="form.price" placeholder="Precio" required>
-                            </div>
-                            <div>
-                                <input type="number" x-model="form.stock" placeholder="Stock">
-                            </div>
-                            <div>
-                                <input type="text" x-model="form.category" placeholder="Categoría">
-                            </div>
-                            <div class="full">
-                                <input type="text" x-model="form.description" placeholder="Descripción (opcional)">
-                            </div>
-                            <div class="full">
-                                <button type="submit" class="btn btn-primary" :disabled="loading">Guardar producto</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h2>Productos <span class="badge" x-text="products.length"></span></h2>
-                    <template x-if="products.length === 0">
-                        <div class="empty">
-                            <p>No hay productos todavía. Agregá el primero.</p>
-                        </div>
-                    </template>
-                    <template x-if="products.length > 0">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Precio</th>
-                                    <th>Stock</th>
-                                    <th>Categoría</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="p in products" :key="p.id">
-                                    <tr>
-                                        <td><strong x-text="p.name"></strong><br><span style="font-size:.75rem;color:#94a3b8" x-text="p.description"></span></td>
-                                        <td x-text="'$' + parseFloat(p.price).toFixed(2)"></td>
-                                        <td x-text="p.stock"></td>
-                                        <td><span class="badge" x-text="p.category || '—'"></span></td>
-                                        <td><button class="btn btn-danger btn-sm" @click="deleteProduct(p.id)">Eliminar</button></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </template>
-                </div>
-            </div>
+      <!-- SIDEBAR -->
+      <div class="sidebar sidebar-dark" id="sidebar">
+        <div class="sidebar-brand d-flex align-items-center ps-3 pe-4">
+          <svg class="icon me-2" viewBox="0 0 96 96" fill="none">
+            <rect x="14" y="58" width="6" height="22" rx="3" fill="#3399ff" opacity="0.35"/>
+            <rect x="24" y="48" width="6" height="32" rx="3" fill="#3399ff" opacity="0.53"/>
+            <rect x="34" y="36" width="6" height="44" rx="3" fill="#3399ff" opacity="0.71"/>
+            <rect x="44" y="22" width="6" height="58" rx="3" fill="#3399ff" opacity="0.89"/>
+            <path d="M54 22 L74 22 C79 22 83 26 83 31 L83 51 C83 56 79 60 74 60 L64 60" fill="none" stroke="#dee2e6" stroke-width="7" stroke-linecap="round"/>
+            <rect x="14" y="80" width="42" height="4" rx="2" fill="#dee2e6"/>
+          </svg>
+          <span class="sidebar-brand-text">ALDIA<span>.</span></span>
         </div>
-    </template>
+        <ul class="sidebar-nav" data-coreui="navigation">
+          <li class="nav-item">
+            <a class="nav-link" :class="{ active: activeView === 'dashboard' }" href="#" @click.prevent="activeView='dashboard'; closeSidebar()">
+              <i class="nav-icon cil-speedometer"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" :class="{ active: activeView === 'products' }" href="#" @click.prevent="activeView='products'; closeSidebar()">
+              <i class="nav-icon cil-cart"></i> <span>Productos</span>
+              <span class="badge badge-soft-primary ms-auto" x-text="stats.totalProducts">0</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" :class="{ active: activeView === 'users' }" href="#" @click.prevent="activeView='users'; closeSidebar()">
+              <i class="nav-icon cil-people"></i> <span>Usuarios</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" :class="{ active: activeView === 'data' }" href="#" @click.prevent="activeView='data'; closeSidebar()">
+              <i class="nav-icon cil-database"></i> <span>Datos</span>
+            </a>
+          </li>
+        </ul>
+        <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>
+      </div>
+
+      <div class="wrapper d-flex flex-column min-vh-100 bg-light flex-grow-1">
+
+        <!-- HEADER -->
+        <header class="header header-sticky mb-0 border-bottom">
+          <div class="container-fluid d-flex align-items-center">
+            <button class="header-toggler me-2" type="button" onclick="document.getElementById('sidebar').classList.toggle('sidebar-unfoldable')">
+              <i class="cil-menu"></i>
+            </button>
+            <span class="page-heading mb-0" x-text="pageTitle"></span>
+            <div class="ms-auto d-flex align-items-center gap-3">
+              <div class="dropdown">
+                <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center gap-2 p-0" type="button" data-coreui-toggle="dropdown">
+                  <div class="avatar" x-text="userName.charAt(0).toUpperCase()"></div>
+                  <span class="small fw-semibold d-none d-md-inline" x-text="userName"></span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                  <h6 class="dropdown-header" x-text="userName"></h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/" target="_blank"><i class="cil-external-link me-2"></i>Ir al sitio</a>
+                  <a class="dropdown-item" href="#" @click.prevent="logout()"><i class="cil-account-logout me-2"></i>Cerrar sesión</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="body flex-grow-1">
+          <div class="content-wrapper">
+
+            <!-- DASHBOARD VIEW -->
+            <template x-if="activeView === 'dashboard'">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                  <div>
+                    <h4 class="mb-0 fw-bold">Dashboard</h4>
+                    <span class="small text-body-secondary">Panel principal de ALDIA</span>
+                  </div>
+                  <span class="small text-body-secondary" x-text="'Última actualización: ' + lastUpdate"></span>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-6 col-lg-3">
+                    <div class="card stats-card border-start border-primary shadow-sm">
+                      <div class="card-body d-flex align-items-center gap-3">
+                        <div class="stats-icon bg-primary bg-opacity-10 text-primary"><i class="cil-cart"></i></div>
+                        <div>
+                          <div class="stats-value" x-text="stats.totalProducts">0</div>
+                          <div class="stats-label">Productos</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-lg-3">
+                    <div class="card stats-card border-start border-success shadow-sm">
+                      <div class="card-body d-flex align-items-center gap-3">
+                        <div class="stats-icon bg-success bg-opacity-10 text-success"><i class="cil-people"></i></div>
+                        <div>
+                          <div class="stats-value" x-text="stats.totalUsers">0</div>
+                          <div class="stats-label">Usuarios</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-lg-3">
+                    <div class="card stats-card border-start border-warning shadow-sm">
+                      <div class="card-body d-flex align-items-center gap-3">
+                        <div class="stats-icon bg-warning bg-opacity-10 text-warning"><i class="cil-warning"></i></div>
+                        <div>
+                          <div class="stats-value" x-text="stats.lowStock">0</div>
+                          <div class="stats-label">Stock bajo</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6 col-lg-3">
+                    <div class="card stats-card border-start border-danger shadow-sm">
+                      <div class="card-body d-flex align-items-center gap-3">
+                        <div class="stats-icon bg-danger bg-opacity-10 text-danger"><i class="cil-ban"></i></div>
+                        <div>
+                          <div class="stats-value" x-text="stats.outOfStock">0</div>
+                          <div class="stats-label">Sin stock</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-12 col-lg-8">
+                    <div class="card shadow-sm">
+                      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <strong>Productos por categoría</strong>
+                      </div>
+                      <div class="card-body">
+                        <div class="c-chart-wrapper">
+                          <canvas id="categoryChart"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm">
+                      <div class="card-header bg-white"><strong>Stock general</strong></div>
+                      <div class="card-body text-center py-4">
+                        <div class="display-3 fw-bold text-primary" x-text="stats.totalProducts">0</div>
+                        <div class="text-body-secondary small">Productos registrados</div>
+                        <hr>
+                        <div class="d-flex justify-content-between small mb-1"><span class="text-success fw-semibold">Con stock</span><span x-text="stats.totalProducts - stats.outOfStock"></span></div>
+                        <div class="d-flex justify-content-between small mb-1"><span class="text-warning fw-semibold">Stock bajo</span><span x-text="stats.lowStock"></span></div>
+                        <div class="d-flex justify-content-between small"><span class="text-danger fw-semibold">Sin stock</span><span x-text="stats.outOfStock"></span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card shadow-sm">
+                  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <strong>Últimos productos</strong>
+                    <button class="btn btn-sm btn-outline-primary" @click="activeView='products'">Ver todos</button>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th>Nombre</th><th>Precio</th><th>Stock</th><th>Categoría</th></tr></thead>
+                        <tbody>
+                          <template x-for="p in products.slice(0,5)" :key="p.id">
+                            <tr>
+                              <td><span class="fw-semibold" x-text="p.name"></span><br><span class="small text-body-secondary" x-text="p.description"></span></td>
+                              <td class="fw-semibold" x-text="'$' + parseFloat(p.price).toFixed(2)"></td>
+                              <td>
+                                <span :class="{'text-success fw-semibold': p.stock > 10, 'text-warning fw-semibold': p.stock > 0 && p.stock <= 10, 'text-danger fw-semibold': p.stock == 0}" x-text="p.stock ?? 0"></span>
+                              </td>
+                              <td><span class="badge badge-soft-primary" x-text="p.category || '—'"></span></td>
+                            </tr>
+                          </template>
+                          <template x-if="products.length === 0">
+                            <tr><td colspan="4" class="text-center text-body-secondary py-4">No hay productos aún</td></tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- PRODUCTS VIEW -->
+            <template x-if="activeView === 'products'">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                  <div>
+                    <h4 class="mb-0 fw-bold">Productos</h4>
+                    <span class="small text-body-secondary" x-text="'Total: ' + products.length + ' productos'"></span>
+                  </div>
+                  <button class="btn btn-primary" @click="openProductModal()"><i class="cil-plus me-1"></i>Nuevo producto</button>
+                </div>
+
+                <div class="card shadow-sm">
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                          <tr><th>Nombre</th><th>Precio</th><th>Stock</th><th>Categoría</th><th class="text-end">Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                          <template x-for="p in products" :key="p.id">
+                            <tr>
+                              <td><span class="fw-semibold" x-text="p.name"></span><br><span class="small text-body-secondary" x-text="p.description || ''"></span></td>
+                              <td class="fw-semibold" x-text="'$' + parseFloat(p.price).toFixed(2)"></td>
+                              <td>
+                                <span :class="{'text-success fw-semibold': p.stock > 10, 'text-warning fw-semibold': p.stock > 0 && p.stock <= 10, 'text-danger fw-semibold': p.stock == 0 || p.stock == null}" x-text="p.stock ?? 0"></span>
+                                <div class="stock-bar" x-show="p.stock > 0">
+                                  <div class="stock-bar-fill" :style="'width:' + Math.min(100, (p.stock / 50) * 100) + '%'" :class="p.stock > 20 ? 'bg-success' : p.stock > 5 ? 'bg-warning' : 'bg-danger'"></div>
+                                </div>
+                              </td>
+                              <td><span class="badge badge-soft-primary" x-text="p.category || '—'"></span></td>
+                              <td class="text-end table-actions">
+                                <button class="btn btn-outline-primary btn-sm" @click="editProduct(p)" title="Editar"><i class="cil-pen"></i></button>
+                                <button class="btn btn-outline-danger btn-sm ms-1" @click="deleteProduct(p.id)" title="Eliminar"><i class="cil-trash"></i></button>
+                              </td>
+                            </tr>
+                          </template>
+                          <template x-if="products.length === 0">
+                            <tr><td colspan="5" class="text-center text-body-secondary py-4"><i class="cil-cart me-2"></i>No hay productos. Creá el primero.</td></tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- USERS VIEW -->
+            <template x-if="activeView === 'users'">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h4 class="mb-0 fw-bold">Usuarios</h4>
+                    <span class="small text-body-secondary" x-text="'Total: ' + users.length + ' usuarios'"></span>
+                  </div>
+                </div>
+
+                <div class="card shadow-sm">
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th>ID</th><th>Negocio</th><th>Email</th><th>Subdominio</th><th>Rol</th><th>Registro</th></tr></thead>
+                        <tbody>
+                          <template x-for="u in users" :key="u.id">
+                            <tr>
+                              <td class="text-body-secondary" x-text="u.id"></td>
+                              <td class="fw-semibold" x-text="u.nombre_negocio"></td>
+                              <td x-text="u.email"></td>
+                              <td><code x-text="u.subdominio"></code></td>
+                              <td><span class="badge" :class="u.role === 'admin' ? 'badge-soft-warning' : 'badge-soft-info'" x-text="u.role"></span></td>
+                              <td class="small text-body-secondary" x-text="u.created_at"></td>
+                            </tr>
+                          </template>
+                          <template x-if="users.length === 0">
+                            <tr><td colspan="6" class="text-center text-body-secondary py-4">No hay usuarios</td></tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- DATA VIEW -->
+            <template x-if="activeView === 'data'">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h4 class="mb-0 fw-bold">Base de Datos</h4>
+                    <span class="small text-body-secondary">Vista completa de la base SQLite</span>
+                  </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                  <div class="card-header bg-white"><strong>Usuarios</strong> <span class="badge badge-soft-primary ms-2" x-text="users.length"></span></div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Subdominio</th><th>Rol</th><th>Creado</th></tr></thead>
+                        <tbody>
+                          <template x-for="u in users" :key="u.id">
+                            <tr><td x-text="u.id"></td><td x-text="u.nombre_negocio"></td><td x-text="u.email"></td><td x-text="u.subdominio"></td><td x-text="u.role"></td><td x-text="u.created_at"></td></tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card shadow-sm">
+                  <div class="card-header bg-white"><strong>Productos</strong> <span class="badge badge-soft-primary ms-2" x-text="products.length"></span></div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light"><tr><th>ID</th><th>User ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Categoría</th><th>Creado</th></tr></thead>
+                        <tbody>
+                          <template x-for="p in products" :key="p.id">
+                            <tr><td x-text="p.id"></td><td x-text="p.user_id"></td><td x-text="p.name"></td><td x-text="'$' + parseFloat(p.price).toFixed(2)"></td><td x-text="p.stock ?? 0"></td><td x-text="p.category || '—'"></td><td x-text="p.created_at"></td></tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+          </div>
+        </div>
+
+        <footer class="footer px-3">
+          <div class="container-fluid d-flex flex-wrap justify-content-between">
+            <span>ALDIA — Punto de venta en la nube</span>
+            <span class="text-body-secondary">© 2026</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </template>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal fade" id="productModal" tabindex="-1" data-coreui-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" x-text="editMode ? 'Editar producto' : 'Nuevo producto'"></h5>
+          <button type="button" class="btn-close" data-coreui-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Nombre *</label>
+            <input type="text" class="form-control" x-model="form.name" required>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Precio *</label>
+              <input type="number" step="0.01" class="form-control" x-model="form.price" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Stock</label>
+              <input type="number" class="form-control" x-model="form.stock">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Categoría</label>
+            <input type="text" class="form-control" x-model="form.category" placeholder="Ej: Lácteos, Bebidas...">
+          </div>
+          <div class="mb-0">
+            <label class="form-label small fw-semibold">Descripción</label>
+            <textarea class="form-control" rows="2" x-model="form.description"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-coreui-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" @click="saveProduct()" :disabled="loading" x-text="loading ? 'Guardando…' : 'Guardar'"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 function app() {
-    return {
-        token: localStorage.getItem('auth_token') || '',
-        userName: localStorage.getItem('user_name') || '',
-        loginEmail: '',
-        loginPassword: '',
-        loginError: '',
-        loading: false,
-        products: [],
-        form: { name: '', description: '', price: '', stock: '', category: '' },
-        apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
+  return {
+    token: localStorage.getItem('auth_token') || '',
+    userName: localStorage.getItem('user_name') || '',
+    userRole: localStorage.getItem('user_role') || '',
+    loginEmail: '',
+    loginPassword: '',
+    loginError: '',
+    loading: false,
+    activeView: 'dashboard',
+    products: [],
+    users: [],
+    stats: { totalProducts: 0, totalUsers: 0, lowStock: 0, outOfStock: 0 },
+    form: { id: null, name: '', description: '', price: '', stock: '', category: '' },
+    editMode: false,
+    lastUpdate: '',
+    apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
 
-        init() {
-            if (this.token) this.loadProducts();
-        },
+    get pageTitle() {
+      var titles = { dashboard: 'Dashboard', products: 'Productos', users: 'Usuarios', data: 'Base de Datos' };
+      return titles[this.activeView] || 'ALDIA';
+    },
 
-        login() {
-            this.loading = true;
-            this.loginError = '';
-            fetch(this.apiBase + '/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: this.loginEmail, password: this.loginPassword })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.token) {
-                    this.token = data.token;
-                    this.userName = data.user.nombre_negocio;
-                    localStorage.setItem('auth_token', data.token);
-                    localStorage.setItem('user_name', data.user.nombre_negocio);
-                    this.loadProducts();
-                } else {
-                    this.loginError = data.message || 'Error al iniciar sesión.';
-                }
-                this.loading = false;
-            })
-            .catch(() => { this.loginError = 'Error de conexión.'; this.loading = false; });
-        },
+    init() {
+      if (this.token) {
+        this.loadAll();
+        this.lastUpdate = new Date().toLocaleTimeString();
+        setInterval(() => { this.loadStats(); this.lastUpdate = new Date().toLocaleTimeString(); }, 30000);
+      }
+    },
 
-        logout() {
-            this.token = '';
-            this.userName = '';
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('user_name');
-            this.products = [];
-        },
+    loadAll() {
+      this.loadProducts();
+      this.loadStats();
+      this.loadUsers();
+    },
 
-        loadProducts() {
-            fetch(this.apiBase + '/api/products', { headers: { 'Authorization': this.token } })
-                .then(r => r.json())
-                .then(data => { this.products = data; })
-                .catch(() => {});
-        },
+    loadStats() {
+      fetch(this.apiBase + '/api/stats', { headers: { 'Authorization': this.token } })
+        .then(r => r.json())
+        .then(data => { this.stats = data; this.renderChart(); })
+        .catch(() => {});
+    },
 
-        addProduct() {
-            this.loading = true;
-            fetch(this.apiBase + '/api/products', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': this.token },
-                body: JSON.stringify({
-                    name: this.form.name,
-                    description: this.form.description,
-                    price: parseFloat(this.form.price),
-                    stock: parseInt(this.form.stock) || 0,
-                    category: this.form.category
-                })
-            })
-            .then(r => r.json())
-            .then(() => {
-                this.form = { name: '', description: '', price: '', stock: '', category: '' };
-                this.loadProducts();
-                this.loading = false;
-            })
-            .catch(() => { this.loading = false; });
-        },
+    loadProducts() {
+      fetch(this.apiBase + '/api/products', { headers: { 'Authorization': this.token } })
+        .then(r => r.json())
+        .then(data => { this.products = data; this.renderChart(); })
+        .catch(() => {});
+    },
 
-        deleteProduct(id) {
-            if (!confirm('¿Eliminar este producto?')) return;
-            fetch(this.apiBase + '/api/products/' + id, {
-                method: 'DELETE',
-                headers: { 'Authorization': this.token }
-            })
-            .then(r => r.json())
-            .then(() => { this.loadProducts(); })
-            .catch(() => {});
+    loadUsers() {
+      fetch(this.apiBase + '/api/data', { headers: { 'Authorization': this.token } })
+        .then(r => { if (r.ok) return r.json(); throw new Error('Forbidden'); })
+        .then(data => { this.users = data.users || []; })
+        .catch(() => { this.users = []; });
+    },
+
+    login() {
+      this.loading = true;
+      this.loginError = '';
+      fetch(this.apiBase + '/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.loginEmail, password: this.loginPassword })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.token) {
+          this.token = data.token;
+          this.userName = data.user.nombre_negocio;
+          this.userRole = data.user.role;
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_name', data.user.nombre_negocio);
+          localStorage.setItem('user_role', data.user.role);
+          this.loadAll();
+        } else {
+          this.loginError = data.message || 'Error al iniciar sesión.';
         }
+        this.loading = false;
+      })
+      .catch(() => { this.loginError = 'Error de conexión.'; this.loading = false; });
+    },
+
+    logout() {
+      this.token = '';
+      this.userName = '';
+      this.userRole = '';
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_name');
+      localStorage.removeItem('user_role');
+      this.products = [];
+      this.users = [];
+      this.activeView = 'dashboard';
+    },
+
+    openProductModal(data) {
+      if (data) {
+        this.editMode = true;
+        this.form = { id: data.id, name: data.name, description: data.description || '', price: data.price, stock: data.stock ?? '', category: data.category || '' };
+      } else {
+        this.editMode = false;
+        this.form = { id: null, name: '', description: '', price: '', stock: '', category: '' };
+      }
+      var modal = new coreui.Modal(document.getElementById('productModal'));
+      modal.show();
+    },
+
+    editProduct(p) { this.openProductModal(p); },
+
+    saveProduct() {
+      if (!this.form.name || !this.form.price) return;
+      this.loading = true;
+      var url, method;
+      if (this.editMode) {
+        url = this.apiBase + '/api/products/' + this.form.id;
+        method = 'PUT';
+      } else {
+        url = this.apiBase + '/api/products';
+        method = 'POST';
+      }
+      fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': this.token },
+        body: JSON.stringify({
+          name: this.form.name,
+          description: this.form.description,
+          price: parseFloat(this.form.price),
+          stock: parseInt(this.form.stock) || 0,
+          category: this.form.category
+        })
+      })
+      .then(r => r.json())
+      .then(() => {
+        this.loadProducts();
+        this.loadStats();
+        this.loading = false;
+        coreui.Modal.getInstance(document.getElementById('productModal')).hide();
+      })
+      .catch(() => { this.loading = false; });
+    },
+
+    deleteProduct(id) {
+      if (!confirm('¿Eliminar este producto?')) return;
+      fetch(this.apiBase + '/api/products/' + id, {
+        method: 'DELETE',
+        headers: { 'Authorization': this.token }
+      })
+      .then(r => r.json())
+      .then(() => { this.loadProducts(); this.loadStats(); })
+      .catch(() => {});
+    },
+
+    closeSidebar() {
+      var el = document.getElementById('sidebar');
+      if (el && window.innerWidth < 768 && el.classList.contains('sidebar-unfoldable')) {
+        el.classList.remove('sidebar-unfoldable');
+      }
+    },
+
+    renderChart() {
+      setTimeout(() => {
+        var canvas = document.getElementById('categoryChart');
+        if (!canvas) return;
+        var cats = {};
+        this.products.forEach(p => {
+          var c = p.category || 'Sin categoría';
+          cats[c] = (cats[c] || 0) + 1;
+        });
+        var labels = Object.keys(cats);
+        var data = Object.values(cats);
+        if (labels.length === 0) { labels = ['Sin productos']; data = [1]; }
+
+        if (this._chart) { this._chart.destroy(); }
+        this._chart = new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Cantidad',
+              backgroundColor: ['#3399ff', '#2eb85c', '#f9b115', '#e55353', '#39f', '#2eb85c', '#f9b115'],
+              data: data
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }, 100);
     }
+  }
 }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@5/dist/js/coreui.bundle.min.js"></script>
 </body>
 </html>

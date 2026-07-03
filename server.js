@@ -151,6 +151,31 @@ app.get('/api/data', requireAuth, function(req, res) {
   res.json({ users: users, products: products });
 });
 
+app.get('/api/stats', requireAuth, function(req, res) {
+  var totalProducts = query('SELECT COUNT(*) as count FROM products WHERE user_id = ?', [req.userId])[0].count;
+  var lowStock = query('SELECT COUNT(*) as count FROM products WHERE user_id = ? AND stock > 0 AND stock <= 5', [req.userId])[0].count;
+  var outOfStock = query('SELECT COUNT(*) as count FROM products WHERE user_id = ? AND (stock IS NULL OR stock = 0)', [req.userId])[0].count;
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  var totalUsers = 0;
+  if (user && user.role === 'admin') {
+    totalUsers = query('SELECT COUNT(*) as count FROM users')[0].count;
+  }
+  res.json({ totalProducts: totalProducts, lowStock: lowStock, outOfStock: outOfStock, totalUsers: totalUsers });
+});
+
+app.put('/api/products/:id', requireAuth, function(req, res) {
+  var p = queryOne('SELECT * FROM products WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
+  if (!p) return res.status(404).json({ message: 'Producto no encontrado.' });
+  var name = req.body.name !== undefined ? req.body.name : p.name;
+  var description = req.body.description !== undefined ? req.body.description : p.description;
+  var price = req.body.price !== undefined ? parseFloat(req.body.price) : p.price;
+  var stock = req.body.stock !== undefined ? parseInt(req.body.stock) : p.stock;
+  var category = req.body.category !== undefined ? req.body.category : p.category;
+  run('UPDATE products SET name=?, description=?, price=?, stock=?, category=? WHERE id=?', [name, description, price, stock, category, req.params.id]);
+  var updated = queryOne('SELECT * FROM products WHERE id = ?', [req.params.id]);
+  res.json(updated);
+});
+
 app.delete('/api/products/:id', requireAuth, function(req, res) {
   var p = queryOne('SELECT * FROM products WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
   if (!p) return res.status(404).json({ message: 'Producto no encontrado.' });
