@@ -143,6 +143,14 @@ app.post('/api/products', requireAuth, function(req, res) {
   res.status(201).json(product);
 });
 
+app.get('/api/data', requireAuth, function(req, res) {
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Solo administradores.' });
+  var users = query('SELECT id, nombre_negocio, email, subdominio, role, created_at FROM users ORDER BY id');
+  var products = query('SELECT * FROM products ORDER BY id');
+  res.json({ users: users, products: products });
+});
+
 app.delete('/api/products/:id', requireAuth, function(req, res) {
   var p = queryOne('SELECT * FROM products WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
   if (!p) return res.status(404).json({ message: 'Producto no encontrado.' });

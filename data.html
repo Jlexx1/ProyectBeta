@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALDIA - Datos</title>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; background: #f1f5f9; padding: 2rem; color: #1e293b; }
+h1 { margin-bottom: 1rem; }
+.error { color: #dc2626; margin-bottom: 1rem; }
+table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-bottom: 2rem; }
+th, td { padding: .75rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: .875rem; }
+th { background: #f8fafc; font-weight: 600; color: #475569; }
+.login { max-width: 400px; margin: 4rem auto; background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+.login h2 { margin-bottom: 1rem; }
+input { width: 100%; padding: .75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 1rem; font-size: .875rem; }
+button { width: 100%; padding: .75rem; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+button:hover { background: #1d4ed8; }
+</style>
+</head>
+<body>
+<div x-data="app()">
+  <template x-if="!token">
+    <div class="login">
+      <h2>Login (admin)</h2>
+      <p class="error" x-text="error"></p>
+      <input type="email" x-model="email" placeholder="admin@aldia.com">
+      <input type="password" x-model="password" placeholder="Admin123!">
+      <button @click="login()">Ingresar</button>
+    </div>
+  </template>
+  <template x-if="token">
+    <div>
+      <h1>Base de Datos ALDIA</h1>
+      <p style="margin-bottom:1rem;color:#64748b">Usuarios y productos almacenados en SQLite</p>
+
+      <h2 style="margin-bottom:.5rem">Usuarios</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Subdominio</th><th>Rol</th><th>Creado</th></tr></thead>
+        <tbody>
+          <template x-for="u in users" :key="u.id">
+            <tr>
+              <td x-text="u.id"></td>
+              <td x-text="u.nombre_negocio"></td>
+              <td x-text="u.email"></td>
+              <td x-text="u.subdominio"></td>
+              <td x-text="u.role"></td>
+              <td x-text="u.created_at"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+      <h2 style="margin-bottom:.5rem">Productos</h2>
+      <table>
+        <thead><tr><th>ID</th><th>User ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Stock</th><th>Categoría</th><th>Creado</th></tr></thead>
+        <tbody>
+          <template x-for="p in products" :key="p.id">
+            <tr>
+              <td x-text="p.id"></td>
+              <td x-text="p.user_id"></td>
+              <td x-text="p.name"></td>
+              <td x-text="p.description"></td>
+              <td x-text="'$' + parseFloat(p.price).toFixed(2)"></td>
+              <td x-text="p.stock"></td>
+              <td x-text="p.category || '—'"></td>
+              <td x-text="p.created_at"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+      <p style="margin-top:1rem"><a href="/dashboard.html" style="color:#2563eb">&larr; Volver al dashboard</a></p>
+    </div>
+  </template>
+</div>
+<script>
+function app() {
+  return {
+    token: localStorage.getItem('auth_token') || '',
+    email: '',
+    password: '',
+    error: '',
+    users: [],
+    products: [],
+    apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
+    init() {
+      if (this.token) this.loadData();
+    },
+    login() {
+      this.error = '';
+      fetch(this.apiBase + '/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.email, password: this.password })
+      }).then(r => r.json()).then(data => {
+        if (data.token) {
+          this.token = data.token;
+          localStorage.setItem('auth_token', data.token);
+          this.loadData();
+        } else {
+          this.error = data.message || 'Error';
+        }
+      }).catch(() => { this.error = 'Error de conexión.'; });
+    },
+    loadData() {
+      fetch(this.apiBase + '/api/data', { headers: { 'Authorization': this.token } })
+        .then(r => r.json())
+        .then(data => { this.users = data.users; this.products = data.products; })
+        .catch(() => {});
+    }
+  };
+}
+</script>
+</body>
+</html>
