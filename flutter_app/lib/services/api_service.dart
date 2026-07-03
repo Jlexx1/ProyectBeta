@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product.dart';
 
 class ApiService {
-  static const String _base = 'http://10.0.2.2:3000/api';
+  static const String _base = 'http://localhost:3000/api';
   static const String _key = 'auth_token';
 
   static Future<String?> getToken() async {
