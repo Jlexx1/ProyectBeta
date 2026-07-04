@@ -2766,7 +2766,6 @@
             class="w-full"
             method="POST"
             action="/api/registro"
-            @submit.prevent=""
         >
             <div class="mb-4">
                 <label for="nombre_negocio" class="mb-2 block text-sm font-semibold text-slate-700">Nombre del negocio</label>
@@ -3038,7 +3037,7 @@ function registroForm() {
                     .then(r => r.json())
                     .then(data => {
                         if (token !== this._subdomToken) return;
-                        this.subdomEstado = data.Disponible
+                        this.subdomEstado = data.Disponible!
                     })
                     .catch(() => { if (token === this._subdomToken) this.subdomEstado = 'idle'; });
             }, 400);

@@ -99,7 +99,10 @@ app.post('/api/registro', function(req, res) {
   if (exists) return res.status(422).json({ message: 'El email o subdominio ya está registrado.' });
   var hashed = bcrypt.hashSync(password, 10);
   run('INSERT INTO users (nombre_negocio, email, password, subdominio) VALUES (?, ?, ?, ?)', [nombre_negocio, email, hashed, subdominio]);
-  res.status(201).json({ message: 'Cuenta creada exitosamente.' });
+  var user = queryOne('SELECT id, nombre_negocio, email, role FROM users WHERE email = ?', [email]);
+  var token = crypto.randomBytes(32).toString('hex');
+  run('INSERT INTO sessions (user_id, token) VALUES (?, ?)', [user.id, token]);
+  res.status(201).json({ message: 'Cuenta creada exitosamente.', token: token, user: { id: user.id, nombre_negocio: user.nombre_negocio, email: user.email, role: user.role } });
 });
 
 app.get('/api/check-subdominio', function(req, res) {

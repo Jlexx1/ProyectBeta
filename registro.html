@@ -102,10 +102,8 @@
         <form
             class="w-full max-w-xl"
             method="POST"
-            action="https://mipuntodeventa.com.ar/registro"
-            @submit="submitting = true"
+            @submit.prevent="submitForm()"
         >
-            <input type="hidden" name="_token" value="yuEoeNXMsDJhbHQBBkAodhRjDhbkVRRnGBL01cZ7" autocomplete="off">
             
             <input type="text" name="website_url" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
 
@@ -243,6 +241,8 @@
 
             
             
+            <p x-show="errorMsg" x-cloak class="mb-3 text-sm font-medium text-red-500" x-text="errorMsg"></p>
+
             <button type="submit" :disabled="submitting"
                     class="group relative inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-blue-600 px-5 py-3.5 text-[15px] font-bold text-white shadow-[0_4px_0_#1E40AF,0_10px_24px_-8px_rgba(37,99,235,.5)] transition hover:-translate-y-px hover:shadow-[0_5px_0_#1E40AF,0_14px_30px_-8px_rgba(37,99,235,.6)] active:translate-y-0.5 active:shadow-[0_2px_0_#1E40AF,0_6px_14px_-6px_rgba(37,99,235,.4)] disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none">
                 <template x-if="!submitting">
@@ -281,9 +281,11 @@
             password: '',
             showPassword: false,
             submitting: false,
+            errorMsg: '',
             subdomEstado: 'idle',
             _subdomTimer: null,
             _subdomToken: 0,
+            apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
 
             get passwordScore() {
                 const p = this.password;
@@ -329,7 +331,7 @@
                 const token = ++this._subdomToken;
 
                 this._subdomTimer = setTimeout(() => {
-                    fetch(`https://mipuntodeventa.com.ar/registro/disponibilidad?subdominio=${encodeURIComponent(slug)}`, { headers: { Accept: 'application/json' } })
+                    fetch(this.apiBase + '/api/check-subdominio?subdominio=' + encodeURIComponent(slug), { headers: { Accept: 'application/json' } })
                         .then(r => r.json())
                         .then(data => {
                             if (token !== this._subdomToken) return;
@@ -349,6 +351,58 @@
                     .replace(/[^a-z0-9]+/g, '-')
                     .replace(/^-+|-+$/g, '')
                     .substring(0, 50);
+            },
+
+            submitForm() {
+                this.submitting = true;
+                this.errorMsg = '';
+
+                if (!this.nombreNegocio || !this.subdominio || !this.password) {
+                    this.errorMsg = 'Todos los campos son obligatorios.';
+                    this.submitting = false;
+                    return;
+                }
+
+                if (this.password.length < 8) {
+                    this.errorMsg = 'La contraseña debe tener al menos 8 caracteres.';
+                    this.submitting = false;
+                    return;
+                }
+
+                var passwordConfirm = document.querySelector('[name="password_confirmation"]').value;
+                if (this.password !== passwordConfirm) {
+                    this.errorMsg = 'Las contraseñas no coinciden.';
+                    this.submitting = false;
+                    return;
+                }
+
+                fetch(this.apiBase + '/api/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre_negocio: this.nombreNegocio,
+                        email: document.querySelector('[name="email"]').value,
+                        password: this.password,
+                        password_confirmation: passwordConfirm,
+                        subdominio: this.subdominio
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.token) {
+                        localStorage.setItem('auth_token', data.token);
+                        localStorage.setItem('user_name', data.user.nombre_negocio);
+                        localStorage.setItem('user_role', data.user.role);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        this.errorMsg = data.message || 'Error al crear la cuenta.';
+                        this.submitting = false;
+                    }
+                })
+                .catch(() => {
+                    this.errorMsg = 'Error de conexión con el servidor.';
+                    this.submitting = false;
+                });
             }
         }
     }
