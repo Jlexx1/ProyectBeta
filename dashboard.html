@@ -15,6 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@coreui/chartjs@3/dist/js/coreui-chartjs.min.js"></script>
 
   <style>
+    [x-cloak] { display: none !important; }
     body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
     .sidebar { --cui-sidebar-bg: #212631; --cui-sidebar-brand-bg: #1b1f27; --cui-sidebar-nav-link-color: #a3a8b8; --cui-sidebar-nav-link-active-color: #fff; --cui-sidebar-nav-link-active-bg: rgba(255,255,255,.06); --cui-sidebar-nav-link-hover-color: #fff; --cui-sidebar-nav-link-hover-bg: rgba(255,255,255,.04); }
     .sidebar-brand .icon { width: 28px; height: 28px; }
@@ -72,7 +73,8 @@
 
 <div x-data="app()" x-init="init()">
 
-  <template x-if="!token">
+  <!-- LOGIN -->
+  <div x-show="!token && !show2fa && !showForgot && !showReset" x-cloak>
     <div class="login-wrapper">
       <div class="login-card">
         <div class="card shadow-sm border-0">
@@ -101,6 +103,9 @@
               </div>
               <button type="submit" class="btn btn-primary w-100" :disabled="loading" x-text="loading ? 'Ingresando…' : 'Ingresar'"></button>
               <p class="text-danger small text-center mt-2 mb-0" x-show="loginError" x-text="loginError"></p>
+              <div class="text-center mt-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100" @click="showForgot=true; forgotError=''; forgotMessage=''">¿Olvidaste tu contraseña?</button>
+              </div>
             </form>
 
             <p class="text-center mt-3 mb-0" style="font-size:.75rem;color:#94a3b8;">
@@ -110,9 +115,104 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
 
-  <template x-if="token">
+  <!-- 2FA -->
+  <div x-show="show2fa" x-cloak>
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4 text-center">
+            <div class="mb-3">
+              <div class="bg-primary bg-opacity-10 d-inline-flex p-3 rounded-3 mb-2">
+                <i class="cil-shield-alt" style="font-size:1.8rem;color:#3399ff"></i>
+              </div>
+              <h4 class="fw-bold">Verificación en dos pasos</h4>
+              <p class="text-body-secondary small mb-0">Ingresá el código de 6 dígitos que enviamos a <strong x-text="twofaEmail"></strong></p>
+            </div>
+            <form @submit.prevent="verify2fa()">
+              <div class="mb-3">
+                <input type="text" class="form-control form-control-lg text-center fw-bold" style="letter-spacing:8px;font-size:1.5rem;font-family:monospace" x-model="twofaCode" maxlength="6" placeholder="000000" inputmode="numeric" autocomplete="one-time-code" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100" :disabled="loading || twofaCode.length !== 6" x-text="loading ? 'Verificando…' : 'Verificar código'"></button>
+              <p class="text-danger small mt-2 mb-0" x-show="twofaError" x-text="twofaError"></p>
+            </form>
+            <div class="mt-3">
+              <button class="btn btn-link btn-sm" @click="resend2fa()" :disabled="loading">
+                <span x-text="resendText"></span>
+              </button>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm mt-1" @click="show2fa=false; twofaCode=''; twofaError=''">Volver al inicio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD -->
+  <div x-show="showForgot" x-cloak>
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4 text-center">
+            <div class="mb-3">
+              <div class="bg-primary bg-opacity-10 d-inline-flex p-3 rounded-3 mb-2">
+                <i class="cil-envelope-open" style="font-size:1.8rem;color:#3399ff"></i>
+              </div>
+              <h4 class="fw-bold">Restablecer contraseña</h4>
+              <p class="text-body-secondary small mb-0">Ingresá tu email y te enviaremos un código de verificación.</p>
+            </div>
+            <form @submit.prevent="sendResetCode()">
+              <div class="mb-3">
+                <input type="email" class="form-control form-control-lg" x-model="forgotEmail" placeholder="tu@email.com" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100" :disabled="loading" x-text="loading ? 'Enviando…' : 'Enviar código'"></button>
+              <p class="text-success small mt-2 mb-0" x-show="forgotMessage" x-text="forgotMessage"></p>
+              <p class="text-danger small mt-2 mb-0" x-show="forgotError" x-text="forgotError"></p>
+            </form>
+            <button class="btn btn-outline-secondary btn-sm mt-3" @click="showForgot=false; forgotEmail=''; forgotError=''; forgotMessage=''">Volver al inicio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET PASSWORD -->
+  <div x-show="showReset" x-cloak>
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4 text-center">
+            <div class="mb-3">
+              <div class="bg-primary bg-opacity-10 d-inline-flex p-3 rounded-3 mb-2">
+                <i class="cil-check" style="font-size:1.8rem;color:#3399ff"></i>
+              </div>
+              <h4 class="fw-bold">Nueva contraseña</h4>
+              <p class="text-body-secondary small mb-0">Ingresá el código que recibiste y tu nueva contraseña.</p>
+            </div>
+            <form @submit.prevent="resetPassword()">
+              <div class="mb-3">
+                <input type="text" class="form-control form-control-lg text-center fw-bold" style="letter-spacing:8px;font-size:1.5rem;font-family:monospace" x-model="resetCode" maxlength="6" placeholder="000000" inputmode="numeric" required>
+              </div>
+              <div class="mb-3">
+                <input type="password" class="form-control form-control-lg" x-model="resetPassword" placeholder="Nueva contraseña" minlength="8" required>
+              </div>
+              <div class="mb-3">
+                <input type="password" class="form-control form-control-lg" x-model="resetPasswordConfirm" placeholder="Confirmar contraseña" minlength="8" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100" :disabled="loading" x-text="loading ? 'Restableciendo…' : 'Restablecer contraseña'"></button>
+              <p class="text-success small mt-2 mb-0" x-show="resetMessage" x-text="resetMessage"></p>
+              <p class="text-danger small mt-2 mb-0" x-show="resetError" x-text="resetError"></p>
+            </form>
+            <button class="btn btn-outline-secondary btn-sm mt-3" @click="showReset=false; resetCode=''; resetPassword=''; resetPasswordConfirm=''; resetError=''; resetMessage=''">Volver al inicio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div x-show="token" x-cloak>
     <div class="d-flex" style="min-height:100vh">
 
       <!-- SIDEBAR -->
@@ -172,6 +272,12 @@
                 <div class="dropdown-menu dropdown-menu-end">
                   <h6 class="dropdown-header" x-text="userName"></h6>
                   <div class="dropdown-divider"></div>
+                  <div class="dropdown-item d-flex align-items-center justify-content-between">
+                    <span><i class="cil-shield-alt me-2"></i>2FA</span>
+                    <div class="form-check form-switch m-0">
+                      <input class="form-check-input" type="checkbox" :checked="twofaEnabled" @click.prevent="toggle2fa()">
+                    </div>
+                  </div>
                   <a class="dropdown-item" href="/" target="_blank"><i class="cil-external-link me-2"></i>Ir al sitio</a>
                   <a class="dropdown-item" href="#" @click.prevent="logout()"><i class="cil-account-logout me-2"></i>Cerrar sesión</a>
                 </div>
@@ -439,7 +545,7 @@
         </footer>
       </div>
     </div>
-  </template>
+  </div>
 
   <!-- PRODUCT MODAL -->
   <div class="modal fade" id="productModal" tabindex="-1" data-coreui-backdrop="static">
@@ -500,7 +606,24 @@ function app() {
     form: { id: null, name: '', description: '', price: '', stock: '', category: '' },
     editMode: false,
     lastUpdate: '',
-    apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
+    apiBase: 'http://localhost:3000',
+    show2fa: false,
+    twofaCode: '',
+    twofaEmail: '',
+    twofaTempToken: '',
+    twofaError: '',
+    resendText: 'Reenviar código',
+    twofaEnabled: false,
+    showForgot: false,
+    showReset: false,
+    forgotEmail: '',
+    forgotError: '',
+    forgotMessage: '',
+    resetCode: '',
+    resetPassword: '',
+    resetPasswordConfirm: '',
+    resetError: '',
+    resetMessage: '',
 
     get pageTitle() {
       var titles = { dashboard: 'Dashboard', products: 'Productos', users: 'Usuarios', data: 'Base de Datos' };
@@ -510,9 +633,36 @@ function app() {
     init() {
       if (this.token) {
         this.loadAll();
+        this.load2faStatus();
         this.lastUpdate = new Date().toLocaleTimeString();
         setInterval(() => { this.loadStats(); this.lastUpdate = new Date().toLocaleTimeString(); }, 30000);
       }
+    },
+
+    load2faStatus() {
+      fetch(this.apiBase + '/api/2fa-status', { headers: { 'Authorization': this.token } })
+        .then(r => r.json())
+        .then(data => { this.twofaEnabled = data.twofa_enabled; })
+        .catch(() => {});
+    },
+
+    toggle2fa() {
+      this.loading = true;
+      fetch(this.apiBase + '/api/setup-2fa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': this.token },
+        body: JSON.stringify({ enabled: !this.twofaEnabled })
+      })
+      .then(r => r.json())
+      .then(data => {
+        this.twofaEnabled = data.twofa_enabled;
+        this.loading = false;
+        if (data.twofa_enabled) {
+          alert('2FA activado. Ahora vas a cerrar sesión y al volver a entrar te pedirá el código de verificación.');
+          this.logout();
+        }
+      })
+      .catch(() => { this.loading = false; });
     },
 
     loadAll() {
@@ -545,6 +695,8 @@ function app() {
     login() {
       this.loading = true;
       this.loginError = '';
+      this.showForgot = false;
+      this.showReset = false;
       fetch(this.apiBase + '/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -552,7 +704,13 @@ function app() {
       })
       .then(r => r.json())
       .then(data => {
-        if (data.token) {
+        if (data.requires_2fa) {
+          this.twofaEmail = data.email;
+          this.twofaTempToken = data.temp_token;
+          this.twofaCode = '';
+          this.twofaError = '';
+          this.show2fa = true;
+        } else if (data.token) {
           this.token = data.token;
           this.userName = data.user.nombre_negocio;
           this.userRole = data.user.role;
@@ -568,16 +726,146 @@ function app() {
       .catch(() => { this.loginError = 'Error de conexión.'; this.loading = false; });
     },
 
+    verify2fa() {
+      this.loading = true;
+      this.twofaError = '';
+      fetch(this.apiBase + '/api/verify-2fa-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ temp_token: this.twofaTempToken, code: this.twofaCode })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.token) {
+          this.token = data.token;
+          this.userName = data.user.nombre_negocio;
+          this.userRole = data.user.role;
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_name', data.user.nombre_negocio);
+          localStorage.setItem('user_role', data.user.role);
+          this.show2fa = false;
+          this.loadAll();
+          this.load2faStatus();
+        } else {
+          this.twofaError = data.message || 'Código incorrecto.';
+        }
+        this.loading = false;
+      })
+      .catch(() => { this.twofaError = 'Error de conexión.'; this.loading = false; });
+    },
+
+    resend2fa() {
+      this.loading = true;
+      this.resendText = 'Enviando…';
+      fetch(this.apiBase + '/api/send-2fa-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ temp_token: this.twofaTempToken })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.message) {
+          this.resendText = '¡Reenviado!';
+          setTimeout(() => { this.resendText = 'Reenviar código'; }, 3000);
+        }
+        this.loading = false;
+      })
+      .catch(() => { this.resendText = 'Reenviar código'; this.loading = false; });
+    },
+
+    sendResetCode() {
+      if (!this.forgotEmail) return;
+      this.loading = true;
+      this.forgotError = '';
+      this.forgotMessage = '';
+      console.log('Enviando código a:', this.forgotEmail);
+      fetch(this.apiBase + '/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.forgotEmail })
+      })
+      .then(r => {
+        console.log('Response status:', r.status);
+        return r.json().then(data => ({ ok: r.ok, data: data }));
+      })
+      .then(({ ok, data }) => {
+        console.log('Response data:', data);
+        this.loading = false;
+        if (ok) {
+          this.forgotMessage = data.message;
+          setTimeout(() => {
+            this.showForgot = false;
+            this.showReset = true;
+            console.log('Cambiando a showReset');
+          }, 1500);
+        } else {
+          this.forgotError = data.message;
+        }
+      })
+      .catch(err => { this.loading = false; this.forgotError = 'Error de conexión: ' + err.message; console.error(err); });
+    },
+
+    resetPassword() {
+      if (!this.resetCode || !this.resetPassword || !this.resetPasswordConfirm) return;
+      this.loading = true;
+      this.resetError = '';
+      this.resetMessage = '';
+      fetch(this.apiBase + '/api/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: this.forgotEmail,
+          code: this.resetCode,
+          password: this.resetPassword,
+          password_confirmation: this.resetPasswordConfirm
+        })
+      })
+      .then(r => r.json().then(data => ({ ok: r.ok, data: data })))
+      .then(({ ok, data }) => {
+        this.loading = false;
+        if (ok) {
+          this.resetMessage = data.message + ' Ahora podés iniciar sesión.';
+          setTimeout(() => {
+            this.showReset = false;
+            this.forgotEmail = '';
+            this.resetCode = '';
+            this.resetPassword = '';
+            this.resetPasswordConfirm = '';
+            this.resetError = '';
+            this.resetMessage = '';
+          }, 3000);
+        } else {
+          this.resetError = data.message;
+        }
+      })
+      .catch(() => { this.loading = false; this.resetError = 'Error de conexión.'; });
+    },
+
     logout() {
       this.token = '';
       this.userName = '';
       this.userRole = '';
+      this.show2fa = false;
+      this.twofaCode = '';
+      this.twofaEmail = '';
+      this.twofaTempToken = '';
+      this.twofaError = '';
+      this.showForgot = false;
+      this.showReset = false;
+      this.forgotEmail = '';
+      this.forgotError = '';
+      this.forgotMessage = '';
+      this.resetCode = '';
+      this.resetPassword = '';
+      this.resetPasswordConfirm = '';
+      this.resetError = '';
+      this.resetMessage = '';
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_name');
       localStorage.removeItem('user_role');
       this.products = [];
       this.users = [];
-      this.activeView = 'dashboard';
+      window.location.href = 'index.html';
     },
 
     openProductModal(data) {

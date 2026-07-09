@@ -1,411 +1,284 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full">
+<html lang="es">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="csrf-token" content="yuEoeNXMsDJhbHQBBkAodhRjDhbkVRRnGBL01cZ7">
-    <title>Crear cuenta — Mi Punto de Venta</title>
-    <meta name="theme-color" content="#2563EB"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALDIA - Crear Cuenta</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f1f5f9; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .wrapper { width: 100%; max-width: 440px; }
+    .card { background: white; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.08); padding: 40px 32px; }
+    .logo { text-align: center; margin-bottom: 20px; }
+    .logo h2 { font-size: 24px; font-weight: 800; }
+    .logo p { color: #64748b; font-size: 13px; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #334155; }
+    input { width: 100%; padding: 11px 14px; font-size: 15px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: border-color .2s; }
+    input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .input-group { display: flex; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; transition: border-color .2s; }
+    .input-group:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+    .input-group input { border: none; border-radius: 0; }
+    .input-group input:focus { box-shadow: none; }
+    .input-group-text { display: flex; align-items: center; padding: 0 12px; background: #f8fafc; font-family: monospace; font-size: 12px; color: #94a3b8; border-left: 1px solid #e2e8f0; white-space: nowrap; }
+    .btn { width: 100%; padding: 12px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: opacity .2s; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+    .btn-outline { background: transparent; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-outline:hover:not(:disabled) { background: #f8fafc; }
+    .text-center { text-align: center; }
+    .mt-1 { margin-top: 4px; }
+    .mt-2 { margin-top: 8px; }
+    .mt-3 { margin-top: 16px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-3 { margin-bottom: 16px; }
+    .small { font-size: 13px; }
+    .error { color: #dc2626; }
+    .success { color: #16a34a; }
+    .muted { color: #94a3b8; }
+    .hidden { display: none; }
+    .flex { display: flex; align-items: center; gap: 4px; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-1 { gap: 4px; }
+    .bar { height: 4px; flex: 1; border-radius: 2px; transition: background .2s; }
+    .bar-1 { background: #fecaca; }
+    .bar-2 { background: #fed7aa; }
+    .bar-3 { background: #a7f3d0; }
+    .bar-4 { background: #6ee7b7; }
+    .bar-empty { background: #e2e8f0; }
+    a { color: #2563eb; text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    .password-wrap { position: relative; }
+    .password-wrap input { padding-right: 40px; }
+    .toggle-pw { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; color: #94a3b8; }
+    .toggle-pw:hover { color: #475569; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="card">
+      <div class="logo">
+        <svg width="72" height="72" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 16px">
+          <rect x="14" y="58" width="6" height="22" rx="3" fill="#3399ff" opacity="0.35"/>
+          <rect x="24" y="48" width="6" height="32" rx="3" fill="#3399ff" opacity="0.53"/>
+          <rect x="34" y="36" width="6" height="44" rx="3" fill="#3399ff" opacity="0.71"/>
+          <rect x="44" y="22" width="6" height="58" rx="3" fill="#3399ff" opacity="0.89"/>
+          <path d="M54 22 L74 22 C79 22 83 26 83 31 L83 51 C83 56 79 60 74 60 L64 60" fill="none" stroke="#3399ff" stroke-width="7" stroke-linecap="round"/>
+          <rect x="14" y="80" width="42" height="4" rx="2" fill="#3399ff"/>
+        </svg>
+        <h2>ALDIA</h2>
+        <p>Creá tu cuenta gratis</p>
+      </div>
 
-    <link rel="preload" as="style" href="https://mipuntodeventa.com.ar/build/assets/app-HNqEmOY7.css" /><link rel="modulepreload" as="script" href="https://mipuntodeventa.com.ar/build/assets/app-DsbP9Jus.js" /><link rel="stylesheet" href="https://mipuntodeventa.com.ar/build/assets/app-HNqEmOY7.css" data-navigate-track="reload" /><script type="module" src="https://mipuntodeventa.com.ar/build/assets/app-DsbP9Jus.js" data-navigate-track="reload"></script>    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
-    </head>
-<body class="h-full bg-slate-50 text-slate-900 antialiased font-sans">
-<div class="grid min-h-full lg:grid-cols-[1.05fr_1fr]" x-data="registroForm()" x-cloak>
-
-    
-    <aside class="relative hidden lg:flex flex-col justify-between overflow-hidden bg-blue-600 text-white px-16 py-12">
-        <div class="absolute inset-0 opacity-55 [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,.12)_1px,transparent_0)] [background-size:28px_28px]"></div>
-        <div class="absolute inset-0 [background:radial-gradient(ellipse_at_20%_120%,rgba(14,32,87,.55)_0%,rgba(37,99,235,0)_55%)]"></div>
-
-        <div class="relative z-10 flex items-center gap-3">
-            <div class="grid h-10 w-10 place-items-center rounded-lg bg-white">
-                <svg width="28" height="28" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="14" y="58" width="6" height="22" rx="3" fill="#2563EB" fill-opacity=".45"/>
-                    <rect x="24" y="48" width="6" height="32" rx="3" fill="#2563EB" fill-opacity=".63"/>
-                    <rect x="34" y="36" width="6" height="44" rx="3" fill="#2563EB" fill-opacity=".81"/>
-                    <rect x="44" y="22" width="6" height="58" rx="3" fill="#2563EB"/>
-                    <path d="M54 22 L74 22 C79 22 83 26 83 31 L83 51 C83 56 79 60 74 60 L64 60" fill="none" stroke="#2563EB" stroke-width="7" stroke-linecap="round"/>
-                    <rect x="14" y="80" width="42" height="4" rx="2" fill="#2563EB"/>
-                </svg>
-            </div>
-            <span class="whitespace-nowrap text-2xl font-extrabold tracking-tight">
-                Mi Punto de Venta<span class="text-cyan-400">.</span>
-            </span>
+      <form id="registerForm">
+        <div class="form-group">
+          <label>Nombre del negocio</label>
+          <input type="text" id="nombreNegocio" placeholder="Ej: Kiosco Don Roque" required autofocus>
         </div>
 
-        <div class="relative z-10 max-w-[460px]">
-            <span class="mb-7 inline-flex items-center gap-2 rounded-full border border-white/25 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-white/90">
-                <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 ring-4 ring-cyan-400/20"></span>
-                14 días gratis, sin tarjeta
-            </span>
-            <h1 class="text-balance mb-5 text-5xl font-extrabold leading-[1.05] tracking-tight">
-                Tu negocio en la nube, desde hoy.
-            </h1>
-            <p class="mb-10 max-w-[420px] text-lg leading-relaxed text-white/80">
-                Creá tu cuenta en 2 minutos y empezá a vender con Mi Punto de Venta. Sin instalaciones, sin vueltas, sin perder una venta más.
-            </p>
-
-            <ul class="flex flex-col gap-3.5">
-                                    <li class="flex items-start gap-3.5 text-[15px] text-white/90">
-                        <span class="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-white/15">
-                            <svg viewBox="0 0 14 14" fill="none" class="h-3.5 w-3.5">
-                                <path d="M2 7.5 L5.5 11 L12 3.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </span>
-                        POS completo con turnos de caja y control de stock
-                    </li>
-                                    <li class="flex items-start gap-3.5 text-[15px] text-white/90">
-                        <span class="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-white/15">
-                            <svg viewBox="0 0 14 14" fill="none" class="h-3.5 w-3.5">
-                                <path d="M2 7.5 L5.5 11 L12 3.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </span>
-                        PLU por peso y precio — ideal para carnicerías y almacenes
-                    </li>
-                                    <li class="flex items-start gap-3.5 text-[15px] text-white/90">
-                        <span class="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-white/15">
-                            <svg viewBox="0 0 14 14" fill="none" class="h-3.5 w-3.5">
-                                <path d="M2 7.5 L5.5 11 L12 3.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </span>
-                        Pedidos anticipados, recepciones y cotizaciones incluidos
-                    </li>
-                                    <li class="flex items-start gap-3.5 text-[15px] text-white/90">
-                        <span class="mt-0.5 grid h-6 w-6 flex-shrink-0 place-items-center rounded-lg bg-white/15">
-                            <svg viewBox="0 0 14 14" fill="none" class="h-3.5 w-3.5">
-                                <path d="M2 7.5 L5.5 11 L12 3.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </span>
-                        Soporte humano por WhatsApp, de 8 a 22 hs
-                    </li>
-                            </ul>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="tunombre@gmail.com" required autocomplete="email">
         </div>
 
-        <div class="relative z-10 max-w-[380px] rounded-2xl border border-white/20 bg-white/5 p-6 backdrop-blur-sm">
-            <p class="mb-3.5 text-[15px] leading-relaxed text-white/90">
-                "Migré desde un sistema de escritorio y en 2 días ya estaba facturando de nuevo. El stock se sincroniza solo entre los 3 locales."
-            </p>
-            <div class="flex items-center gap-3">
-                <div class="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-amber-500 to-red-500 text-sm font-bold text-white">
-                    MA
-                </div>
-                <div class="flex flex-col text-xs">
-                    <span class="font-bold text-white">Marcela Aguirre</span>
-                    <span class="text-white/60">Kiosco 24 · 3 locales · Rosario</span>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    
-    <main class="flex items-center justify-center bg-slate-50 px-6 py-8 lg:px-12">
-        <form
-            class="w-full max-w-xl"
-            method="POST"
-            @submit.prevent="submitForm()"
-        >
-            
-            <input type="text" name="website_url" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
-
-            <div class="mb-12 flex justify-end text-sm text-slate-500">
-                ¿Ya tenés cuenta? Ingresá desde tu propia URL,
-                <span class="ml-1 font-mono text-slate-700">tu-negocio.mipuntodeventa.com.ar</span>
-            </div>
-
-            <h2 class="mb-2.5 text-3xl font-extrabold leading-tight tracking-tight text-slate-900">
-                Creá tu cuenta gratis
-            </h2>
-            <p class="mb-8 text-[15px] leading-relaxed text-slate-500">
-                2 minutos, 5 campos, cero tarjeta. Empezás a vender hoy.
-            </p>
-
-            
-            
-            <div class="mb-4">
-                <label for="nombre_negocio" class="mb-2 block text-sm font-semibold text-slate-700">Nombre del negocio</label>
-                <input
-                    id="nombre_negocio"
-                    name="nombre_negocio"
-                    type="text"
-                    x-model="nombreNegocio"
-                    @input="generateSubdomain()"
-                    value=""
-                    placeholder="Ej: Kiosco Don Roque"
-                    required
-                    autofocus
-                    class="block w-full rounded-xl border-[1.5px] bg-white px-3.5 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-blue-600/10"
-                />
-                            </div>
-
-            
-            <div class="mb-4">
-                <label for="email" class="mb-2 block text-sm font-semibold text-slate-700">Email</label>
-                <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value=""
-                    placeholder="tunombre@gmail.com"
-                    required
-                    class="block w-full rounded-xl border-[1.5px] bg-white px-3.5 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-blue-600/10"
-                />
-                            </div>
-
-            
-            <div class="mb-4">
-                <label for="password" class="mb-2 block text-sm font-semibold text-slate-700">Contraseña</label>
-                <div class="relative">
-                    <input
-                        id="password"
-                        name="password"
-                        x-model="password"
-                        :type="showPassword ? 'text' : 'password'"
-                        placeholder="Mínimo 8 caracteres"
-                        required
-                        class="block w-full rounded-xl border-[1.5px] bg-white px-3.5 py-3 pr-11 text-[15px] text-slate-900 placeholder:text-slate-400 transition focus:outline-none focus:ring-4 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-blue-600/10"
-                    />
-                    <button type="button" tabindex="-1" aria-label="Ver contraseña"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 transition hover:text-slate-600"
-                            @click="showPassword = !showPassword">
-                        <svg x-show="!showPassword" viewBox="0 0 20 20" fill="none" class="h-[18px] w-[18px]">
-                            <path d="M2.042 10C3.122 6.093 6.236 3.333 10 3.333c3.764 0 6.878 2.76 7.958 6.667-1.08 3.907-4.194 6.667-7.958 6.667-3.764 0-6.878-2.76-7.958-6.667Z" stroke="currentColor" stroke-width="1.5"/>
-                            <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
-                        </svg>
-                        <svg x-show="showPassword" viewBox="0 0 20 20" fill="none" class="h-[18px] w-[18px]" style="display:none">
-                            <path d="M3.333 3.333 16.667 16.667M8.228 8.228A2.5 2.5 0 0 0 11.77 11.77M5.596 5.596C3.973 6.723 2.7 8.25 2.042 10c1.08 3.907 4.194 6.667 7.958 6.667a9.16 9.16 0 0 0 4.404-1.13M8.333 4.39A9.27 9.27 0 0 1 10 4.167c3.764 0 6.878 2.76 7.958 6.667a10.3 10.3 0 0 1-2.07 3.573" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                </div>
-                                <p x-show="!password" class="mt-1.5 text-xs text-slate-400">Combiná mayúsculas, minúsculas y un número.</p>
-                <div x-show="password" x-cloak class="mt-2">
-                    <div class="flex gap-1">
-                        <template x-for="i in 4" :key="i">
-                            <div class="h-1 flex-1 rounded-full transition-colors" :class="i <= passwordScore ? passwordColor : 'bg-slate-200'"></div>
-                        </template>
-                    </div>
-                    <p class="mt-1 text-xs font-medium" :class="passwordTextColor" x-text="passwordLabel"></p>
-                </div>
-            </div>
-
-            
-            <div class="mb-4">
-                <label for="password_confirmation" class="mb-2 block text-sm font-semibold text-slate-700">
-                    Confirmá tu contraseña
-                </label>
-                <input
-                    id="password_confirmation"
-                    name="password_confirmation"
-                    type="password"
-                    placeholder="Repetí tu contraseña"
-                    required
-                    class="block w-full rounded-xl border-[1.5px] border-slate-200 bg-white px-3.5 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 transition hover:border-slate-300 focus:border-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-600/10"
-                />
-            </div>
-
-            
-            <div class="mb-4">
-                <label for="subdominio" class="mb-2 block text-sm font-semibold text-slate-700">
-                    Dirección de tu panel
-                </label>
-                <div class="flex items-stretch overflow-hidden rounded-xl border-[1.5px] bg-white transition focus-within:ring-4 border-slate-200 focus-within:border-blue-600 focus-within:ring-blue-600/10">
-                    <input
-                        id="subdominio"
-                        name="subdominio"
-                        type="text"
-                        x-model="subdominio"
-                        @input="checkSubdominio()"
-                        placeholder="mi-negocio"
-                        required
-                        class="min-w-0 flex-1 border-0 bg-transparent px-3.5 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 outline-none"
-                    />
-                    <span class="flex items-center whitespace-nowrap border-l-[1.5px] border-slate-200 bg-slate-100 px-3.5 font-mono text-[13px] text-slate-500">
-                        .mipuntodeventa.com.ar
-                    </span>
-                </div>
-                                <p x-show="subdomEstado === 'idle'" class="mt-1.5 text-xs text-slate-400">Después la compartís con tu equipo para que se sume.</p>
-                <p x-show="subdomEstado === 'corto'" x-cloak class="mt-1.5 text-xs text-slate-400">Mínimo 3 caracteres.</p>
-                <p x-show="subdomEstado === 'checking'" x-cloak class="mt-1.5 text-xs text-slate-400">Verificando disponibilidad…</p>
-                <p x-show="subdomEstado === 'ok'" x-cloak class="mt-1.5 text-xs font-medium text-emerald-600">✓ ¡Disponible!</p>
-                <p x-show="subdomEstado === 'ocupado'" x-cloak class="mt-1.5 text-xs text-red-500">Ese subdominio ya está en uso. Probá otro.</p>
-                <p x-show="subdomEstado === 'reservado'" x-cloak class="mt-1.5 text-xs text-red-500">Ese subdominio está reservado. Elegí otro.</p>
-            </div>
-
-            
-            <label class="my-2 mb-6 flex items-start gap-2.5 text-sm leading-relaxed text-slate-500">
-                <input type="checkbox" required class="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer accent-blue-600"/>
-                <span>
-                    Acepto los <a href="https://mipuntodeventa.com.ar/terminos-y-condiciones" target="_blank" class="font-semibold text-blue-600 underline decoration-blue-600/30 underline-offset-[3px] hover:text-blue-700">términos y condiciones</a>
-                    y la <a href="https://mipuntodeventa.com.ar/politica-de-privacidad" target="_blank" class="font-semibold text-blue-600 underline decoration-blue-600/30 underline-offset-[3px] hover:text-blue-700">política de privacidad</a> de Mi Punto de Venta.
-                </span>
-            </label>
-
-            
-            
-            <p x-show="errorMsg" x-cloak class="mb-3 text-sm font-medium text-red-500" x-text="errorMsg"></p>
-
-            <button type="submit" :disabled="submitting"
-                    class="group relative inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-blue-600 px-5 py-3.5 text-[15px] font-bold text-white shadow-[0_4px_0_#1E40AF,0_10px_24px_-8px_rgba(37,99,235,.5)] transition hover:-translate-y-px hover:shadow-[0_5px_0_#1E40AF,0_14px_30px_-8px_rgba(37,99,235,.6)] active:translate-y-0.5 active:shadow-[0_2px_0_#1E40AF,0_6px_14px_-6px_rgba(37,99,235,.4)] disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none">
-                <template x-if="!submitting">
-                    <span class="inline-flex items-center gap-2.5">
-                        Crear mi cuenta gratis
-                        <svg viewBox="0 0 16 16" fill="none" class="h-4 w-4">
-                            <path d="M3 8 L13 8 M9 4 L13 8 L9 12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                </template>
-                <template x-if="submitting">
-                    <span class="inline-flex items-center gap-2.5">
-                        <span class="h-[18px] w-[18px] animate-spin rounded-full border-[2.5px] border-white/40 border-t-white"></span>
-                        Creando tu cuenta…
-                    </span>
-                </template>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <div class="password-wrap">
+            <input type="password" id="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
+            <button type="button" class="toggle-pw" id="togglePw" tabindex="-1" aria-label="Ver contraseña">
+              <svg id="eyeOpen" viewBox="0 0 20 20" fill="none" width="18" height="18"><path d="M2.042 10C3.122 6.093 6.236 3.333 10 3.333c3.764 0 6.878 2.76 7.958 6.667-1.08 3.907-4.194 6.667-7.958 6.667-3.764 0-6.878-2.76-7.958-6.667Z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/></svg>
+              <svg id="eyeClosed" viewBox="0 0 20 20" fill="none" width="18" height="18" class="hidden"><path d="M3.333 3.333 16.667 16.667M8.228 8.228A2.5 2.5 0 0 0 11.77 11.77M5.596 5.596C3.973 6.723 2.7 8.25 2.042 10c1.08 3.907 4.194 6.667 7.958 6.667a9.16 9.16 0 0 0 4.404-1.13M8.333 4.39A9.27 9.27 0 0 1 10 4.167c3.764 0 6.878 2.76 7.958 6.667a10.3 10.3 0 0 1-2.07 3.573" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
             </button>
+          </div>
+          <div id="strengthBars" class="flex gap-1 mt-1 hidden">
+            <div class="bar" id="bar1"></div>
+            <div class="bar" id="bar2"></div>
+            <div class="bar" id="bar3"></div>
+            <div class="bar" id="bar4"></div>
+          </div>
+          <p id="strengthLabel" class="small muted mt-1"></p>
+        </div>
 
-            <div class="mt-8 flex flex-wrap justify-between gap-3 text-xs text-slate-400">
-                <span>© 2026 Mi Punto de Venta. Hecho en Argentina.</span>
-                <span class="space-x-1">
-                    <a href="#" class="text-slate-500 hover:text-blue-600">Ayuda</a>·
-                    <a href="https://mipuntodeventa.com.ar/politica-de-privacidad" target="_blank" class="text-slate-500 hover:text-blue-600">Privacidad</a>·
-                    <a href="https://mipuntodeventa.com.ar/terminos-y-condiciones" target="_blank" class="text-slate-500 hover:text-blue-600">Términos</a>
-                </span>
-            </div>
-        </form>
-    </main>
-</div>
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input type="password" id="passwordConfirm" placeholder="Repetí tu contraseña" minlength="8" required>
+        </div>
 
-<script>
-    function registroForm() {
-        return {
-            nombreNegocio: "",
-            subdominio: "",
-            password: '',
-            showPassword: false,
-            submitting: false,
-            errorMsg: '',
-            subdomEstado: 'idle',
-            _subdomTimer: null,
-            _subdomToken: 0,
-            apiBase: window.location.protocol === 'file:' ? 'http://localhost:3000' : '',
+        <div class="form-group">
+          <label>Dirección de tu panel</label>
+          <div class="input-group">
+            <input type="text" id="subdominio" placeholder="mi-negocio" required>
+            <span class="input-group-text">.aldia.app</span>
+          </div>
+          <p id="subdomMsg" class="small muted mt-1">Mínimo 3 caracteres.</p>
+        </div>
 
-            get passwordScore() {
-                const p = this.password;
-                if (!p) return 0;
-                let score = 0;
-                if (p.length >= 8) score++;
-                if (/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
-                if (/\d/.test(p)) score++;
-                if (/[^A-Za-z0-9]/.test(p)) score++;
-                return Math.min(score, 4);
-            },
+        <label class="flex mt-2 mb-3" style="gap:8px;align-items:flex-start;font-size:13px;color:#94a3b8;cursor:pointer">
+          <input type="checkbox" id="termsCheck" required style="margin-top:2px;width:auto;cursor:pointer">
+          <span>Acepto los <a href="#" target="_blank">términos y condiciones</a> y la <a href="#" target="_blank">política de privacidad</a> de ALDIA.</span>
+        </label>
 
-            get passwordLabel() {
-                return ['', 'Débil', 'Aceptable', 'Buena', 'Fuerte'][this.passwordScore] || '';
-            },
+        <p id="registerError" class="error small text-center mt-2 hidden"></p>
+        <p id="registerSuccess" class="success small text-center mt-2 hidden"></p>
 
-            get passwordColor() {
-                return ['bg-slate-200', 'bg-red-400', 'bg-amber-400', 'bg-lime-500', 'bg-emerald-500'][this.passwordScore];
-            },
+        <button type="submit" class="btn btn-primary mt-2" id="registerBtn">Crear mi cuenta gratis</button>
+      </form>
 
-            get passwordTextColor() {
-                return ['text-slate-400', 'text-red-500', 'text-amber-600', 'text-lime-600', 'text-emerald-600'][this.passwordScore];
-            },
+      <p class="text-center small mt-3" style="color:#94a3b8">¿Ya tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
+    </div>
+  </div>
 
-            generateSubdomain() {
-                if (this.nombreNegocio.length === 0) {
-                    this.subdominio = '';
-                    this.subdomEstado = 'idle';
-                    return;
-                }
-                this.subdominio = this.slugify(this.nombreNegocio);
-                this.checkSubdominio();
-            },
+  <script>
+    const apiBase = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
 
-            checkSubdominio() {
-                const slug = this.slugify(this.subdominio);
-                clearTimeout(this._subdomTimer);
+    function $(id) { return document.getElementById(id); }
 
-                if (slug.length === 0) { this.subdomEstado = 'idle'; return; }
-                if (slug.length < 3) { this.subdomEstado = 'corto'; return; }
+    let subdomTimer = null;
+    let subdomToken = 0;
 
-                this.subdomEstado = 'checking';
-                const token = ++this._subdomToken;
+    // ---- Toggle password visibility ----
+    $('togglePw').addEventListener('click', function() {
+      const pw = $('password');
+      const isText = pw.type === 'text';
+      pw.type = isText ? 'password' : 'text';
+      $('eyeOpen').classList.toggle('hidden', !isText);
+      $('eyeClosed').classList.toggle('hidden', isText);
+    });
 
-                this._subdomTimer = setTimeout(() => {
-                    fetch(this.apiBase + '/api/check-subdominio?subdominio=' + encodeURIComponent(slug), { headers: { Accept: 'application/json' } })
-                        .then(r => r.json())
-                        .then(data => {
-                            if (token !== this._subdomToken) return;
-                            this.subdomEstado = data.disponible ? 'ok' : (data.motivo || 'ocupado');
-                        })
-                        .catch(() => { if (token === this._subdomToken) this.subdomEstado = 'idle'; });
-                }, 400);
-            },
+    // ---- Password strength ----
+    $('password').addEventListener('input', function() {
+      const p = this.value;
+      const bars = ['bar1','bar2','bar3','bar4'];
+      const classes = ['','bar-empty','bar-empty','bar-empty','bar-empty'];
+      const labels = ['','Débil','Aceptable','Buena','Fuerte'];
+      const colors = ['','#fecaca','#fed7aa','#a7f3d0','#6ee7b7'];
+      let score = 0;
+      if (p.length >= 8) score++;
+      if (/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
+      if (/\d/.test(p)) score++;
+      if (/[^A-Za-z0-9]/.test(p)) score++;
 
-            slugify(text) {
-                return text
-                    .toString()
-                    .normalize('NFD')
-                    .replace(/[̀-ͯ]/g, '')
-                    .toLowerCase()
-                    .trim()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/^-+|-+$/g, '')
-                    .substring(0, 50);
-            },
+      if (!p) {
+        $('strengthBars').classList.add('hidden');
+        $('strengthLabel').textContent = '';
+        return;
+      }
+      $('strengthBars').classList.remove('hidden');
+      bars.forEach(function(id, i) {
+        $('bar' + (i+1)).style.background = i < score ? colors[score] : '#e2e8f0';
+      });
+      $('strengthLabel').textContent = labels[score] || '';
+      $('strengthLabel').style.color = colors[score] || '#94a3b8';
+    });
 
-            submitForm() {
-                this.submitting = true;
-                this.errorMsg = '';
+    // ---- Subdomain auto-generate from business name ----
+    $('nombreNegocio').addEventListener('input', function() {
+      const slug = slugify(this.value);
+      if (slug) $('subdominio').value = slug;
+      checkSubdominio();
+    });
 
-                if (!this.nombreNegocio || !this.subdominio || !this.password) {
-                    this.errorMsg = 'Todos los campos son obligatorios.';
-                    this.submitting = false;
-                    return;
-                }
+    $('subdominio').addEventListener('input', checkSubdominio);
 
-                if (this.password.length < 8) {
-                    this.errorMsg = 'La contraseña debe tener al menos 8 caracteres.';
-                    this.submitting = false;
-                    return;
-                }
-
-                var passwordConfirm = document.querySelector('[name="password_confirmation"]').value;
-                if (this.password !== passwordConfirm) {
-                    this.errorMsg = 'Las contraseñas no coinciden.';
-                    this.submitting = false;
-                    return;
-                }
-
-                fetch(this.apiBase + '/api/registro', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        nombre_negocio: this.nombreNegocio,
-                        email: document.querySelector('[name="email"]').value,
-                        password: this.password,
-                        password_confirmation: passwordConfirm,
-                        subdominio: this.subdominio
-                    })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.token) {
-                        localStorage.setItem('auth_token', data.token);
-                        localStorage.setItem('user_name', data.user.nombre_negocio);
-                        localStorage.setItem('user_role', data.user.role);
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        this.errorMsg = data.message || 'Error al crear la cuenta.';
-                        this.submitting = false;
-                    }
-                })
-                .catch(() => {
-                    this.errorMsg = 'Error de conexión con el servidor.';
-                    this.submitting = false;
-                });
-            }
-        }
+    function slugify(text) {
+      return text.toString()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 50);
     }
-</script>
+
+    function checkSubdominio() {
+      const slug = slugify($('subdominio').value);
+      clearTimeout(subdomTimer);
+      const msg = $('subdomMsg');
+      if (!slug) { msg.textContent = 'Mínimo 3 caracteres.'; msg.className = 'small muted mt-1'; return; }
+      if (slug.length < 3) { msg.textContent = 'Mínimo 3 caracteres.'; msg.className = 'small muted mt-1'; return; }
+      msg.textContent = 'Verificando disponibilidad…';
+      msg.className = 'small muted mt-1';
+      const token = ++subdomToken;
+      subdomTimer = setTimeout(function() {
+        fetch(apiBase + '/api/check-subdominio?subdominio=' + encodeURIComponent(slug))
+          .then(r => r.json())
+          .then(function(data) {
+            if (token !== subdomToken) return;
+            if (data.disponible) {
+              msg.textContent = '✓ ¡Disponible!';
+              msg.className = 'small success mt-1';
+            } else {
+              msg.textContent = 'Ese subdominio ' + (data.motivo === 'reservado' ? 'está reservado' : 'ya está en uso') + '. Probá otro.';
+              msg.className = 'small error mt-1';
+            }
+          })
+          .catch(function() { if (token === subdomToken) { msg.textContent = 'Mínimo 3 caracteres.'; msg.className = 'small muted mt-1'; } });
+      }, 400);
+    }
+
+    // ---- Submit ----
+    $('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombreNegocio = $('nombreNegocio').value.trim();
+      const email = $('email').value.trim();
+      const password = $('password').value;
+      const passwordConfirm = $('passwordConfirm').value;
+      const subdominio = slugify($('subdominio').value);
+      const btn = $('registerBtn');
+
+      if (!nombreNegocio || !email || !password || !subdominio) {
+        $('registerError').textContent = 'Todos los campos son obligatorios.';
+        $('registerError').classList.remove('hidden');
+        return;
+      }
+      if (password !== passwordConfirm) {
+        $('registerError').textContent = 'Las contraseñas no coinciden.';
+        $('registerError').classList.remove('hidden');
+        return;
+      }
+      if (password.length < 8) {
+        $('registerError').textContent = 'La contraseña debe tener al menos 8 caracteres.';
+        $('registerError').classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creando tu cuenta…';
+      $('registerError').classList.add('hidden');
+      $('registerSuccess').classList.add('hidden');
+
+      fetch(apiBase + '/api/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre_negocio: nombreNegocio,
+          email: email,
+          password: password,
+          password_confirmation: passwordConfirm,
+          subdominio: subdominio
+        })
+      })
+      .then(r => r.json())
+      .then(function(data) {
+        btn.disabled = false;
+        btn.textContent = 'Crear mi cuenta gratis';
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_name', data.user.nombre_negocio);
+          localStorage.setItem('user_role', data.user.role);
+          window.location.href = 'dashboard.html';
+        } else {
+          $('registerError').textContent = data.message || 'Error al crear la cuenta.';
+          $('registerError').classList.remove('hidden');
+        }
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'Crear mi cuenta gratis';
+        $('registerError').textContent = 'Error de conexión con el servidor.';
+        $('registerError').classList.remove('hidden');
+      });
+    });
+  </script>
 </body>
 </html>
