@@ -48,6 +48,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
+app.use(function(err, req, res, next) {
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({ message: 'Error interno del servidor.' });
+});
+
 let db;
 
 function saveDb() {
@@ -64,9 +69,15 @@ initSqlJs().then(function(SQL) {
   db.run("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, token TEXT UNIQUE NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))");
   db.run("CREATE TABLE IF NOT EXISTS twofa_codes (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, code TEXT NOT NULL, temp_token TEXT NOT NULL, expires_at DATETIME, used INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))");
   db.run("CREATE TABLE IF NOT EXISTS reset_codes (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, code TEXT NOT NULL, expires_at DATETIME, used INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))");
+  db.run("CREATE TABLE IF NOT EXISTS corporate_profiles (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER UNIQUE NOT NULL, razon_social TEXT DEFAULT '', cuit TEXT DEFAULT '', direccion TEXT DEFAULT '', telefono TEXT DEFAULT '', email_contacto TEXT DEFAULT '', sitio_web TEXT DEFAULT '', descripcion TEXT DEFAULT '', industria TEXT DEFAULT '', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))");
+  db.run("CREATE TABLE IF NOT EXISTS sucursales (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, nombre TEXT NOT NULL, direccion TEXT DEFAULT '', ciudad TEXT DEFAULT '', provincia TEXT DEFAULT '', pais TEXT DEFAULT 'Argentina', latitud REAL, longitud REAL, telefono TEXT DEFAULT '', email TEXT DEFAULT '', horarios TEXT DEFAULT '', activo INTEGER DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))");
 
   try { db.run('ALTER TABLE users ADD COLUMN twofa_enabled INTEGER DEFAULT 0'); } catch (e) {}
   try { db.run('ALTER TABLE users ADD COLUMN role TEXT DEFAULT "user"'); } catch (e) {}
+  try { db.run('ALTER TABLE corporate_profiles ADD COLUMN industria TEXT DEFAULT ""'); } catch (e) {}
+  try { db.run('ALTER TABLE sucursales ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP'); } catch (e) {}
+  try { db.run('ALTER TABLE products ADD COLUMN codigo_barras TEXT DEFAULT ""'); } catch (e) {}
+  db.run("CREATE TABLE IF NOT EXISTS ventas (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, items TEXT NOT NULL, total REAL NOT NULL, metodo_pago TEXT DEFAULT 'efectivo', created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))");
 
   var adminEmail = 'admin@aldia.com';
   var existing = db.exec('SELECT id FROM users WHERE email = \'' + adminEmail.replace(/'/g, "''") + '\'');
@@ -189,10 +200,11 @@ app.post('/api/send-2fa-code', function(req, res) {
   var user = queryOne('SELECT * FROM users WHERE id = ?', [codeRecord.user_id]);
   if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
   var codigo = generarCodigo2fa();
+  var nuevoToken = crearTempToken();
   run('UPDATE twofa_codes SET used = 1 WHERE temp_token = ?', [tempToken]);
-  run('INSERT INTO twofa_codes (user_id, code, temp_token, expires_at) VALUES (?, ?, ?, datetime("now", "+10 minutes"))', [user.id, codigo, crearTempToken()]);
+  run('INSERT INTO twofa_codes (user_id, code, temp_token, expires_at) VALUES (?, ?, ?, datetime("now", "+10 minutes"))', [user.id, codigo, nuevoToken]);
   enviarCodigo(user.email, codigo);
-  res.json({ message: 'Código reenviado.' });
+  res.json({ message: 'Código reenviado.', temp_token: nuevoToken });
 });
 
 app.post('/api/verify-2fa-code', function(req, res) {
@@ -223,7 +235,21 @@ app.get('/api/2fa-status', requireAuth, function(req, res) {
 });
 
 app.get('/api/products', requireAuth, function(req, res) {
-  var products = query('SELECT * FROM products WHERE user_id = ? ORDER BY created_at DESC', [req.userId]);
+  var q = req.query.q;
+  var barcode = req.query.barcode;
+  var sql, params;
+  if (barcode) {
+    sql = 'SELECT * FROM products WHERE user_id = ? AND codigo_barras = ? ORDER BY name';
+    params = [req.userId, barcode];
+  } else if (q && q.trim()) {
+    var like = '%' + q.trim() + '%';
+    sql = 'SELECT * FROM products WHERE user_id = ? AND (name LIKE ? OR codigo_barras LIKE ? OR category LIKE ?) ORDER BY name LIMIT 50';
+    params = [req.userId, like, like, like];
+  } else {
+    sql = 'SELECT * FROM products WHERE user_id = ? ORDER BY name';
+    params = [req.userId];
+  }
+  var products = query(sql, params);
   res.json(products);
 });
 
@@ -233,8 +259,9 @@ app.post('/api/products', requireAuth, function(req, res) {
   var price = req.body.price;
   var stock = req.body.stock;
   var category = req.body.category;
+  var codigo_barras = req.body.codigo_barras;
   if (!name || price === undefined) return res.status(422).json({ message: 'Nombre y precio requeridos.' });
-  run('INSERT INTO products (user_id, name, description, price, stock, category) VALUES (?, ?, ?, ?, ?, ?)', [req.userId, name, description || '', parseFloat(price), parseInt(stock) || 0, category || '']);
+  run('INSERT INTO products (user_id, name, description, price, stock, category, codigo_barras) VALUES (?, ?, ?, ?, ?, ?, ?)', [req.userId, name, description || '', parseFloat(price), parseInt(stock) || 0, category || '', codigo_barras || '']);
   var products2 = query('SELECT * FROM products WHERE user_id = ? ORDER BY id DESC LIMIT 1', [req.userId]);
   var product = products2.length ? products2[0] : null;
   res.status(201).json(product);
@@ -246,6 +273,129 @@ app.get('/api/data', requireAuth, function(req, res) {
   var users = query('SELECT id, nombre_negocio, email, subdominio, role, created_at FROM users ORDER BY id');
   var products = query('SELECT * FROM products ORDER BY id');
   res.json({ users: users, products: products });
+});
+
+app.get('/api/users', requireAuth, function(req, res) {
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Solo administradores.' });
+  var users = query('SELECT id, nombre_negocio, email, subdominio, role, twofa_enabled, created_at FROM users ORDER BY id');
+  res.json(users);
+});
+
+app.post('/api/users', requireAuth, function(req, res) {
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Solo administradores.' });
+  var nombre_negocio = req.body.nombre_negocio;
+  var email = req.body.email;
+  var password = req.body.password;
+  var subdominio = req.body.subdominio;
+  var role = req.body.role || 'user';
+  if (!nombre_negocio || !email || !password || !subdominio) {
+    return res.status(422).json({ message: 'Nombre, email, contraseña y subdominio son obligatorios.' });
+  }
+  if (password.length < 8) return res.status(422).json({ message: 'La contraseña debe tener al menos 8 caracteres.' });
+  var exists = queryOne('SELECT id FROM users WHERE email = ? OR subdominio = ?', [email, subdominio]);
+  if (exists) return res.status(422).json({ message: 'El email o subdominio ya está registrado.' });
+  var hashed = bcrypt.hashSync(password, 10);
+  run('INSERT INTO users (nombre_negocio, email, password, subdominio, role) VALUES (?, ?, ?, ?, ?)', [nombre_negocio, email, hashed, subdominio, role]);
+  var created = queryOne('SELECT id, nombre_negocio, email, subdominio, role, created_at FROM users WHERE email = ?', [email]);
+  res.status(201).json(created);
+});
+
+app.put('/api/users/:id', requireAuth, function(req, res) {
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Solo administradores.' });
+  var target = queryOne('SELECT * FROM users WHERE id = ?', [req.params.id]);
+  if (!target) return res.status(404).json({ message: 'Usuario no encontrado.' });
+  var nombre_negocio = req.body.nombre_negocio !== undefined ? req.body.nombre_negocio : target.nombre_negocio;
+  var email = req.body.email !== undefined ? req.body.email : target.email;
+  var subdominio = req.body.subdominio !== undefined ? req.body.subdominio : target.subdominio;
+  var role = req.body.role !== undefined ? req.body.role : target.role;
+  if (email !== target.email || subdominio !== target.subdominio) {
+    var dupes = query('SELECT id FROM users WHERE (email = ? OR subdominio = ?) AND id != ?', [email, subdominio, target.id]);
+    if (dupes.length) return res.status(422).json({ message: 'El email o subdominio ya está en uso.' });
+  }
+  if (req.body.password) {
+    if (req.body.password.length < 8) return res.status(422).json({ message: 'La contraseña debe tener al menos 8 caracteres.' });
+    var hashed = bcrypt.hashSync(req.body.password, 10);
+    run('UPDATE users SET nombre_negocio=?, email=?, password=?, subdominio=?, role=? WHERE id=?', [nombre_negocio, email, hashed, subdominio, role, target.id]);
+  } else {
+    run('UPDATE users SET nombre_negocio=?, email=?, subdominio=?, role=? WHERE id=?', [nombre_negocio, email, subdominio, role, target.id]);
+  }
+  var updated = queryOne('SELECT id, nombre_negocio, email, subdominio, role, created_at FROM users WHERE id = ?', [target.id]);
+  res.json(updated);
+});
+
+app.delete('/api/users/:id', requireAuth, function(req, res) {
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Solo administradores.' });
+  var target = queryOne('SELECT * FROM users WHERE id = ?', [req.params.id]);
+  if (!target) return res.status(404).json({ message: 'Usuario no encontrado.' });
+  if (parseInt(target.id) === parseInt(req.userId)) return res.status(422).json({ message: 'No podés eliminar tu propio usuario.' });
+  run('DELETE FROM sessions WHERE user_id = ?', [target.id]);
+  run('DELETE FROM products WHERE user_id = ?', [target.id]);
+  run('DELETE FROM twofa_codes WHERE user_id = ?', [target.id]);
+  run('DELETE FROM reset_codes WHERE user_id = ?', [target.id]);
+  run('DELETE FROM corporate_profiles WHERE user_id = ?', [target.id]);
+  run('DELETE FROM sucursales WHERE user_id = ?', [target.id]);
+  run('DELETE FROM users WHERE id = ?', [target.id]);
+  res.json({ message: 'Usuario eliminado.' });
+});
+
+app.get('/api/corporate-profile', requireAuth, function(req, res) {
+  var profile = queryOne('SELECT * FROM corporate_profiles WHERE user_id = ?', [req.userId]);
+  if (!profile) return res.json(null);
+  res.json(profile);
+});
+
+app.post('/api/corporate-profile', requireAuth, function(req, res) {
+  var existing = queryOne('SELECT id FROM corporate_profiles WHERE user_id = ?', [req.userId]);
+  if (existing) {
+    run('UPDATE corporate_profiles SET razon_social=?, cuit=?, direccion=?, telefono=?, email_contacto=?, sitio_web=?, descripcion=?, industria=?, updated_at=datetime("now") WHERE user_id=?',
+      [req.body.razon_social || '', req.body.cuit || '', req.body.direccion || '', req.body.telefono || '', req.body.email_contacto || '', req.body.sitio_web || '', req.body.descripcion || '', req.body.industria || '', req.userId]);
+  } else {
+    run('INSERT INTO corporate_profiles (user_id, razon_social, cuit, direccion, telefono, email_contacto, sitio_web, descripcion, industria) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [req.userId, req.body.razon_social || '', req.body.cuit || '', req.body.direccion || '', req.body.telefono || '', req.body.email_contacto || '', req.body.sitio_web || '', req.body.descripcion || '', req.body.industria || '']);
+  }
+  var profile = queryOne('SELECT * FROM corporate_profiles WHERE user_id = ?', [req.userId]);
+  res.json(profile);
+});
+
+app.get('/api/corporate-profiles', requireAuth, function(req, res) {
+  var user = queryOne('SELECT role FROM users WHERE id = ?', [req.userId]);
+  if (!user || user.role !== 'admin') return res.status(403).json({ message: 'Solo administradores.' });
+  var profiles = query('SELECT cp.*, u.nombre_negocio, u.email FROM corporate_profiles cp LEFT JOIN users u ON cp.user_id = u.id ORDER BY u.nombre_negocio');
+  res.json(profiles);
+});
+
+app.get('/api/sucursales', requireAuth, function(req, res) {
+  var sucursales = query('SELECT * FROM sucursales WHERE user_id = ? ORDER BY nombre', [req.userId]);
+  res.json(sucursales);
+});
+
+app.post('/api/sucursales', requireAuth, function(req, res) {
+  var nombre = req.body.nombre;
+  if (!nombre) return res.status(422).json({ message: 'El nombre de la sucursal es obligatorio.' });
+  run('INSERT INTO sucursales (user_id, nombre, direccion, ciudad, provincia, pais, latitud, longitud, telefono, email, horarios, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [req.userId, nombre, req.body.direccion || '', req.body.ciudad || '', req.body.provincia || '', req.body.pais || 'Argentina', req.body.latitud || null, req.body.longitud || null, req.body.telefono || '', req.body.email || '', req.body.horarios || '', req.body.activo !== undefined ? (req.body.activo ? 1 : 0) : 1]);
+  var created = queryOne('SELECT * FROM sucursales WHERE id = (SELECT MAX(id) FROM sucursales WHERE user_id = ?)', [req.userId]);
+  res.status(201).json(created);
+});
+
+app.put('/api/sucursales/:id', requireAuth, function(req, res) {
+  var s = queryOne('SELECT * FROM sucursales WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
+  if (!s) return res.status(404).json({ message: 'Sucursal no encontrada.' });
+  run('UPDATE sucursales SET nombre=?, direccion=?, ciudad=?, provincia=?, pais=?, latitud=?, longitud=?, telefono=?, email=?, horarios=?, activo=?, updated_at=datetime("now") WHERE id=?',
+    [req.body.nombre || s.nombre, req.body.direccion !== undefined ? req.body.direccion : s.direccion, req.body.ciudad !== undefined ? req.body.ciudad : s.ciudad, req.body.provincia !== undefined ? req.body.provincia : s.provincia, req.body.pais !== undefined ? req.body.pais : s.pais, req.body.latitud !== undefined ? req.body.latitud : s.latitud, req.body.longitud !== undefined ? req.body.longitud : s.longitud, req.body.telefono !== undefined ? req.body.telefono : s.telefono, req.body.email !== undefined ? req.body.email : s.email, req.body.horarios !== undefined ? req.body.horarios : s.horarios, req.body.activo !== undefined ? (req.body.activo ? 1 : 0) : s.activo, req.params.id]);
+  var updated = queryOne('SELECT * FROM sucursales WHERE id = ?', [req.params.id]);
+  res.json(updated);
+});
+
+app.delete('/api/sucursales/:id', requireAuth, function(req, res) {
+  var s = queryOne('SELECT * FROM sucursales WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
+  if (!s) return res.status(404).json({ message: 'Sucursal no encontrada.' });
+  run('DELETE FROM sucursales WHERE id = ?', [req.params.id]);
+  res.json({ message: 'Sucursal eliminada.' });
 });
 
 app.get('/api/stats', requireAuth, function(req, res) {
@@ -268,7 +418,8 @@ app.put('/api/products/:id', requireAuth, function(req, res) {
   var price = req.body.price !== undefined ? parseFloat(req.body.price) : p.price;
   var stock = req.body.stock !== undefined ? parseInt(req.body.stock) : p.stock;
   var category = req.body.category !== undefined ? req.body.category : p.category;
-  run('UPDATE products SET name=?, description=?, price=?, stock=?, category=? WHERE id=?', [name, description, price, stock, category, req.params.id]);
+  var codigo_barras = req.body.codigo_barras !== undefined ? req.body.codigo_barras : p.codigo_barras;
+  run('UPDATE products SET name=?, description=?, price=?, stock=?, category=?, codigo_barras=? WHERE id=?', [name, description, price, stock, category, codigo_barras, req.params.id]);
   var updated = queryOne('SELECT * FROM products WHERE id = ?', [req.params.id]);
   res.json(updated);
 });
@@ -319,4 +470,33 @@ app.post('/api/reset-password', function(req, res) {
   run('UPDATE users SET password = ? WHERE id = ?', [hashed, user.id]);
   run('DELETE FROM sessions WHERE user_id = ?', [user.id]);
   res.json({ message: 'Contraseña restablecida exitosamente.' });
+});
+
+app.post('/api/ventas', requireAuth, function(req, res) {
+  var items = req.body.items;
+  var total = req.body.total;
+  var metodo_pago = req.body.metodo_pago || 'efectivo';
+  if (!items || !items.length) return res.status(422).json({ message: 'Carrito vacío.' });
+  if (total === undefined || total <= 0) return res.status(422).json({ message: 'Total inválido.' });
+  run('INSERT INTO ventas (user_id, items, total, metodo_pago) VALUES (?, ?, ?, ?)', [req.userId, JSON.stringify(items), parseFloat(total), metodo_pago]);
+  items.forEach(function(item) {
+    if (item.id) {
+      db.run('UPDATE products SET stock = MAX(0, stock - ?) WHERE id = ? AND user_id = ?', [item.cantidad, item.id, req.userId]);
+    }
+  });
+  saveDb();
+  var venta = queryOne('SELECT * FROM ventas WHERE id = (SELECT MAX(id) FROM ventas WHERE user_id = ?)', [req.userId]);
+  res.status(201).json(venta);
+});
+
+app.get('/api/ventas', requireAuth, function(req, res) {
+  var ventas = query('SELECT * FROM ventas WHERE user_id = ? ORDER BY created_at DESC LIMIT 50', [req.userId]);
+  res.json(ventas);
+});
+
+app.get('/api/ventas/:id', requireAuth, function(req, res) {
+  var venta = queryOne('SELECT * FROM ventas WHERE id = ? AND user_id = ?', [req.params.id, req.userId]);
+  if (!venta) return res.status(404).json({ message: 'Venta no encontrada.' });
+  venta.items = JSON.parse(venta.items || '[]');
+  res.json(venta);
 });

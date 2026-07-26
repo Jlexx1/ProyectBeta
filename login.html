@@ -98,6 +98,25 @@
         <button class="btn btn-outline mt-3" id="forgotBackBtn">Volver al inicio</button>
       </div>
 
+      <!-- 2FA VIEW -->
+      <div id="view-2fa" class="hidden">
+        <div class="text-center">
+          <div class="icon-box">
+            <svg fill="none" viewBox="0 0 24 24" stroke="#2563eb" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+          </div>
+          <p class="section-title">Verificación en dos pasos</p>
+          <p class="section-subtitle">Ingresá el código de 6 dígitos que enviamos a <strong id="twofaEmail"></strong></p>
+        </div>
+        <form id="twofaForm">
+          <div class="form-group">
+            <input type="text" class="code" id="twofaCode" maxlength="6" placeholder="000000" inputmode="numeric" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="twofaBtn">Verificar código</button>
+          <p id="twofaError" class="error small text-center mt-2 hidden"></p>
+        </form>
+        <button class="btn btn-outline mt-3" id="twofaBackBtn">Volver al inicio</button>
+      </div>
+
       <!-- RESET VIEW (code + new password) -->
       <div id="view-reset" class="hidden">
         <div class="text-center">
@@ -132,6 +151,7 @@
     function showView(view) {
       document.getElementById('view-login').classList.toggle('hidden', view !== 'login');
       document.getElementById('view-forgot').classList.toggle('hidden', view !== 'forgot');
+      document.getElementById('view-2fa').classList.toggle('hidden', view !== '2fa');
       document.getElementById('view-reset').classList.toggle('hidden', view !== 'reset');
     }
 
@@ -182,7 +202,9 @@
         setLoading('loginBtn', false, 'Ingresar');
         if (data.requires_2fa) {
           $('twofaEmail').textContent = data.email;
-          $('twofaTempToken').value = data.temp_token;
+          $('twofaCode').value = '';
+          $('twofaCode').dataset.tempToken = data.temp_token;
+          showMsg('twofaError', null);
           showView('2fa');
         } else if (data.token) {
           localStorage.setItem('auth_token', data.token);
@@ -195,6 +217,36 @@
       })
       .catch(function() { setLoading('loginBtn', false, 'Ingresar'); showMsg('loginError', 'Error de conexión.', true); });
     });
+
+    // ---- 2FA ----
+    $('twofaForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var code = $('twofaCode').value.trim();
+      var tempToken = $('twofaCode').dataset.tempToken;
+      if (!code || code.length !== 6 || !tempToken) return;
+      setLoading('twofaBtn', true, 'Verificando…');
+      showMsg('twofaError', null);
+      fetch(apiBase + '/api/verify-2fa-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ temp_token: tempToken, code: code })
+      })
+      .then(r => r.json())
+      .then(data => {
+        setLoading('twofaBtn', false, 'Verificar código');
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('user_name', data.user.nombre_negocio);
+          localStorage.setItem('user_role', data.user.role);
+          window.location.href = 'dashboard.html';
+        } else {
+          showMsg('twofaError', data.message || 'Código incorrecto.', true);
+        }
+      })
+      .catch(function() { setLoading('twofaBtn', false, 'Verificar código'); showMsg('twofaError', 'Error de conexión.', true); });
+    });
+
+    $('twofaBackBtn').addEventListener('click', function() { showView('login'); });
 
     $('showForgotBtn').addEventListener('click', function() {
       $('forgotEmail').value = '';
