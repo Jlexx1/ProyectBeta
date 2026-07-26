@@ -92,6 +92,47 @@ initSqlJs().then(function(SQL) {
     console.log('Admin user exists: admin@aldia.com / Admin123!');
   }
 
+  var existingProducts = db.exec('SELECT COUNT(*) as cnt FROM products WHERE user_id = 1');
+  if (!existingProducts.length || !existingProducts[0].values.length || existingProducts[0].values[0][0] === 0) {
+    var defaultProducts = [
+      ['Coca Cola 500ml', 'Gaseosa coca cola 500ml x24', 3.50, 60, 'Bebidas', '7791234500001'],
+      ['Sprite 500ml', '', 3.20, 40, 'Bebidas', '7791234500002'],
+      ['Fanta Naranja 500ml', '', 3.20, 35, 'Bebidas', '7791234500003'],
+      ['Agua Mineral 1.5L', '', 1.80, 50, 'Bebidas', '7791234500004'],
+      ['Fernet Branca 750ml', '', 18.00, 20, 'Bebidas', '7791234500005'],
+      ['Jugo Cepita Naranja 1L', '', 4.50, 25, 'Bebidas', '7791234500006'],
+      ['Papas Lays', '', 2.40, 200, 'Comida', '7791234500007'],
+      ['Alfajor Jorgito Triple', '', 2.80, 80, 'Comida', '7791234500008'],
+      ['Chocolate Águila 50g', '', 3.50, 60, 'Comida', '7791234500009'],
+      ['Galletitas Oreo 144g', '', 4.20, 45, 'Comida', '7791234500010'],
+      ['Caramelos Menta Halls x12', '', 2.00, 100, 'Comida', '7791234500011'],
+      ['Bizcochos Don Satur x10', '', 1.80, 90, 'Comida', '7791234500012'],
+      ['Arroz Gallo 1kg', '', 4.80, 30, 'Alimento', '7791234500013'],
+      ['Fideos Spaghetti Matarazzo 500g', '', 3.20, 45, 'Alimento', '7791234500014'],
+      ['Harina 0000 Pureza 1kg', '', 2.90, 40, 'Alimento', '7791234500015'],
+      ['Aceite Natura 900ml', '', 5.50, 35, 'Alimento', '7791234500016'],
+      ['Yerba Mate Playadito 1kg', '', 7.20, 28, 'Alimento', '7791234500017'],
+      ['Papel Higiénico x24', '', 6.50, 60, 'Aseo del Hogar', '7791234500018'],
+      ['Jabón en Polvo Ala 800g', '', 8.50, 20, 'Aseo del Hogar', '7791234500019'],
+      ['Lavandina Ayudín 1L', '', 2.80, 40, 'Aseo del Hogar', '7791234500020'],
+      ['Detergente Magistral 500ml', '', 4.20, 35, 'Aseo del Hogar', '7791234500021'],
+      ['Esponja Scotch Brite', '', 1.50, 60, 'Aseo del Hogar', '7791234500022'],
+      ['Shampoo Sedal 400ml', '', 6.80, 25, 'Limpieza Personal', '7791234500023'],
+      ['Jabón de Tocador Rexona', '', 2.40, 50, 'Limpieza Personal', '7791234500024'],
+      ['Desodorante Axe 150ml', '', 7.50, 20, 'Limpieza Personal', '7791234500025'],
+      ['Cepillo Dental Colgate', '', 4.90, 30, 'Limpieza Personal', '7791234500026'],
+      ['Pasta Dental Colgate 90g', '', 5.20, 35, 'Limpieza Personal', '7791234500027'],
+      ['Chifles DonBenito 60mg', '', 10.00, 20, 'Alimento', '7791234500028']
+    ];
+    var stmt = db.prepare('INSERT INTO products (user_id, name, description, price, stock, category, codigo_barras) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    defaultProducts.forEach(function(p) { stmt.bind([1].concat(p)); stmt.step(); stmt.reset(); });
+    stmt.free();
+    saveDb();
+    console.log('Productos por defecto creados: ' + defaultProducts.length);
+  } else {
+    console.log('Productos existentes: ' + existingProducts[0].values[0][0]);
+  }
+
   app.listen(PORT, function() {
     console.log('ALDIA server running at http://localhost:' + PORT);
   });
